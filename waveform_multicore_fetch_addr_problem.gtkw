@@ -1,0 +1,157 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Mon Dec 13 10:20:15 2021
+[*]
+[dumpfile] "/home/marti/Escritorio/MIRI/PD/Multicore/sim.vcd"
+[dumpfile_mtime] "Mon Dec 13 09:40:57 2021"
+[dumpfile_size] 115500103
+[savefile] "/home/marti/Escritorio/MIRI/PD/Multicore/waveform_multicore_fetch_addr_problem.gtkw"
+[timestart] 0
+[size] 1848 1016
+[pos] -39 -39
+*-5.000000 52 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.tb_top.
+[treeopen] TOP.tb_top.rvtop.
+[treeopen] TOP.tb_top.rvtop.dmi_wrapper.
+[treeopen] TOP.tb_top.rvtop.mem.
+[treeopen] TOP.tb_top.rvtop.mem.icache.icm_0.
+[treeopen] TOP.tb_top.rvtop.mem.icache.icm_0.ic_data_inst.
+[treeopen] TOP.tb_top.rvtop.mem.icache.icm_0.ic_tag_inst.
+[treeopen] TOP.tb_top.rvtop.mem.iccm.iccm_0.
+[treeopen] TOP.tb_top.rvtop.mem.iccm.iccm_1.
+[treeopen] TOP.tb_top.rvtop.swerv_0.
+[treeopen] TOP.tb_top.rvtop.swerv_0.ifu.
+[treeopen] TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.
+[treeopen] TOP.tb_top.rvtop.swerv_1.
+[treeopen] TOP.tb_top.rvtop.swerv_1.ifu.
+[treeopen] TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).
+[treeopen] TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.
+[treeopen] TOP.tb_top.rvtop.swerv_1.ifu.ifc(1).
+[treeopen] TOP.tb_top.rvtop.swerv_1.ifu.ifc(1).ifc.
+[treeopen] TOP.tb_top.rvtop.swerv_1.ifu.mem_ctl.
+[sst_width] 294
+[signals_width] 318
+[sst_expanded] 1
+[sst_vpaned_height] 468
+@22
+TOP.tb_top.MAX_CYCLES[31:0]
+TOP.tb_top.WriteData[127:0]
+@28
+TOP.tb_top.core_clk
+@22
+TOP.tb_top.rvtop.core_id[55:0]
+TOP.tb_top.rvtop.ic_rd_data[127:0]
+@28
+TOP.tb_top.rvtop.ic_rd_en[1:0]
+@22
+TOP.tb_top.rvtop.iccm_wr_data[155:0]
+TOP.tb_top.rvtop.iccm_rd_data[127:0]
+TOP.tb_top.wb_dest[19:0]
+TOP.tb_top.wb_data[127:0]
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_bank_dout[155:0]
+TOP.tb_top.rvtop.mem.iccm.iccm_0.addr_bank[47:0]
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_data[63:0]
+@28
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_rd_addr_hi_q[3:2]
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_rd_addr_lo_q[3:1]
+@22
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_rd_data[63:0]
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_rd_data_ecc[116:0]
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_rd_data_pre[95:0]
+@28
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_rden
+@22
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_rw_addr[15:1]
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_wr_data[77:0]
+@28
+TOP.tb_top.rvtop.mem.iccm.iccm_0.iccm_wren
+@22
+TOP.tb_top.rvtop.mem.iccm.iccm_1.iccm_rw_addr[15:1]
+@28
+TOP.tb_top.rvtop.swerv_0.dma_ctrl.dma_iccm_req
+TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.iccm_correct_ecc
+@c00022
+TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+@28
+(0)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(1)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(2)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(3)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(4)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(5)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(6)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(7)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(8)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(9)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(10)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(11)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(12)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(13)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(14)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(15)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(16)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(17)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(18)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(19)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(20)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(21)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(22)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(23)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(24)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(25)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(26)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(27)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(28)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(29)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+(30)TOP.tb_top.rvtop.swerv_0.ifu.mem_ctl.fetch_addr_f1[31:1]
+@1401200
+-group_end
+@23
+TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.ifc_fetch_addr_f1_raw[31:1]
+@c00022
+TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+@28
+(0)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(1)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(2)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(3)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(4)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(5)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(6)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(7)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(8)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(9)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(10)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(11)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(12)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(13)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(14)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(15)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(16)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(17)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(18)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(19)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(20)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(21)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(22)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(23)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(24)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(25)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(26)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(27)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+(28)TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.fetch_addr_next[31:3]
+@1401200
+-group_end
+@22
+TOP.tb_top.rvtop.swerv_1.ifu.mem_ctl.fetch_addr_f1[31:1]
+TOP.tb_top.rvtop.swerv_1.ifu.ifc(1).ifc.fetch_addr_next[31:3]
+TOP.tb_top.rvtop.swerv_1.ifu.ifc(1).ifc.ifc_fetch_addr_f1_raw[31:1]
+@28
+TOP.tb_top.rvtop.swerv_1.ifu.ifc(1).ifc.exu_flush_final
+TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.exu_flush_final
+@22
+TOP.tb_top.rvtop.swerv_1.ifu.ifc(0).ifc.exu_flush_path_final[31:1]
+TOP.tb_top.rvtop.swerv_1.ifu.ifc(1).ifc.exu_flush_path_final[31:1]
+[pattern_trace] 1
+[pattern_trace] 0

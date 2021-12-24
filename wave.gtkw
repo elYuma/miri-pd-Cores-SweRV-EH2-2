@@ -1,0 +1,86 @@
+[*]
+[*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
+[*] Tue Dec 14 11:48:22 2021
+[*]
+[dumpfile] "/home/marti/Escritorio/MIRI/PD/Multicore/sim.vcd"
+[dumpfile_mtime] "Tue Dec 14 10:22:12 2021"
+[dumpfile_size] 732056491
+[savefile] "/home/marti/Escritorio/MIRI/PD/Multicore/wave.gtkw"
+[timestart] 59
+[size] 1848 1016
+[pos] -1 -1
+*-5.000000 169 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.tb_top.
+[treeopen] TOP.tb_top.rvtop.
+[treeopen] TOP.tb_top.rvtop.swerv_0.
+[treeopen] TOP.tb_top.rvtop.swerv_0.dec.
+[treeopen] TOP.tb_top.rvtop.swerv_0.exu.
+[sst_width] 233
+[signals_width] 361
+[sst_expanded] 1
+[sst_vpaned_height] 289
+@28
+TOP.core_clk
+@22
+TOP.tb_top.WriteData[127:0]
+TOP.tb_top.cycleCnt[31:0]
+TOP.tb_top.wb_data[127:0]
+TOP.tb_top.wb_dest[19:0]
+TOP.tb_top.reg_addr[7:0]
+@28
+TOP.tb_top.reg_read
+@22
+TOP.tb_top.rvtop.swerv_0.trace_rv_i_address_ip[127:0]
+TOP.tb_top.rvtop.swerv_0.trace_rv_i_ecause_ip[9:0]
+TOP.tb_top.rvtop.swerv_0.trace_rv_i_exception_ip[3:0]
+TOP.tb_top.rvtop.swerv_0.trace_rv_i_insn_ip[127:0]
+TOP.tb_top.rvtop.swerv_0.trace_rv_i_interrupt_ip[3:0]
+TOP.tb_top.rvtop.swerv_0.trace_rv_i_tval_ip[63:0]
+TOP.tb_top.rvtop.swerv_0.trace_rv_i_valid_ip[3:0]
+TOP.tb_top.rvtop.swerv_0.trace_rv_trace_pkt[341:0]
+TOP.tb_top.rvtop.swerv_0.dmi_reg_addr[6:0]
+@28
+TOP.tb_top.rvtop.swerv_0.dmi_reg_en
+@22
+TOP.tb_top.rvtop.swerv_0.dmi_reg_rdata[31:0]
+TOP.tb_top.rvtop.swerv_0.dmi_reg_wdata[31:0]
+@28
+TOP.tb_top.rvtop.swerv_0.dmi_reg_wr_en
+@22
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_waddr_wb[4:0]
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_wdata_wb[31:0]
+@28
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_wen_wb
+@22
+TOP.tb_top.rvtop.swerv_0.dec.dec_i1_waddr_wb[4:0]
+TOP.tb_top.rvtop.swerv_0.dec.dec_i1_wdata_wb[31:0]
+@28
+TOP.tb_top.rvtop.swerv_0.dec.dec_i1_wen_wb
+@22
+TOP.tb_top.rvtop.swerv_0.dec.decode.i0_result_wb[31:0]
+TOP.tb_top.rvtop.swerv_0.dec.decode.i0_result_wb_eff[31:0]
+TOP.tb_top.rvtop.swerv_0.dec.decode.i0_result_wb_raw[31:0]
+@28
+TOP.tb_top.rvtop.swerv_0.dec.decode.lsu_sc_success_dc5
+@22
+TOP.tb_top.rvtop.swerv_0.dec.decode.i0_result_e4_final[31:0]
+TOP.tb_top.rvtop.swerv_0.dec.decode.exu_i0_result_e1[31:0]
+TOP.tb_top.rvtop.swerv_0.exu.i0_alu_e1.out[31:0]
+@28
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_alu_decode_d
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_csr_legal_d
+@22
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_data_en[4:1]
+@28
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_decode_d
+@22
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_immed_d[31:0]
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_instr_d[31:0]
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_predecode[6:0]
+@28
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_pc4_d
+@23
+TOP.tb_top.rvtop.swerv_0.dec.dec_i0_pc_d[31:1]
+[pattern_trace] 1
+[pattern_trace] 0

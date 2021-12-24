@@ -16,16 +16,21 @@
 
 // Run time disassembler functions
 // supports  RISCV 32 bit extentions I, C, M, A, B
+
+`ifndef RV_NUM_CORES
+`define RV_NUM_CORES 2
+`endif
+
 `ifndef RV_NUM_THREADS
 `define RV_NUM_THREADS 1
 `endif
 
-bit[31:0] [31:0] gpr[`RV_NUM_THREADS];
+bit[31:0] [31:0] gpr[`RV_NUM_CORES][`RV_NUM_THREADS];
 
 // main DASM function
 function string dasm(input[31:0] opcode, input[31:0] pc, input[4:0] regn, input[31:0] regv, input tid=0);
     dasm = (opcode[1:0] == 2'b11) ? dasm32(opcode, pc, tid) : dasm16(opcode, pc, tid);
-    if(regn) gpr[tid][regn] = regv;
+    if(regn) gpr[0][tid][regn] = regv;
 endfunction
 
 
@@ -67,7 +72,7 @@ int imm;
     imm[5:3] = opcode[12:10];
     imm[7:6] = opcode[6:5];
 
-    return $sformatf(" %s,%0d(%s) [%h]", abi_reg[opcode[4:2]+8], imm, abi_reg[opcode[9:7]+8], gpr[tid][opcode[9:7]+8]+imm);
+    return $sformatf(" %s,%0d(%s) [%h]", abi_reg[opcode[4:2]+8], imm, abi_reg[opcode[9:7]+8], gpr[0][tid][opcode[9:7]+8]+imm);
 endfunction
 
 function string dasm16_1( input[31:0] opcode, input[31:0] pc);
@@ -173,7 +178,7 @@ bit[31:0] imm;
     if(sh1) {imm[4:3],imm[8:6]} = opcode[6:2];
     else    {imm[4:2],imm[7:6]} = opcode[6:2];
     imm[5] = opcode[12];
-    return $sformatf("%s,0x%0h [%h]", abi_reg[opcode[11:7]], imm, gpr[tid][2]+imm);
+    return $sformatf("%s,0x%0h [%h]", abi_reg[opcode[11:7]], imm, gpr[0][tid][2]+imm);
 endfunction
 
 function string dasm16_css( input[31:0] opcode, input sh1=0, tid=0);
@@ -181,7 +186,7 @@ bit[31:0] imm;
     imm=0;
     if(sh1) {imm[5:3],imm[8:6]} = opcode[12:7];
     else {imm[5:2],imm[7:6]} = opcode[12:7];
-    return $sformatf("%s,0x%0h [%h]", abi_reg[opcode[6:2]], imm, gpr[tid][2]+imm);
+    return $sformatf("%s,0x%0h [%h]", abi_reg[opcode[6:2]], imm, gpr[0][tid][2]+imm);
 endfunction
 
 ///////////////// 32 bit instructions ///////////////////////
@@ -263,7 +268,7 @@ string mn;
     5: mn = "lhu     ";
     default : return $sformatf(".long   0x%h", opcode);
     endcase
-    return $sformatf("%s%s,%0d(%s) [%h]", mn, abi_reg[opcode[11:7]], imm, abi_reg[opcode[19:15]], imm+gpr[tid][opcode[19:15]]);
+    return $sformatf("%s%s,%0d(%s) [%h]", mn, abi_reg[opcode[11:7]], imm, abi_reg[opcode[19:15]], imm+gpr[0][tid][opcode[19:15]]);
 endfunction
 
 function string dasm32_s( input[31:0] opcode, input tid=0, pri=0);
@@ -279,7 +284,7 @@ string mn;
     2: mn = "sw      ";
     default : return $sformatf(".long   0x%h", opcode);
     endcase
-    return $sformatf("%s%s,%0d(%s) [%h]", mn, abi_reg[opcode[24:20]], imm, abi_reg[opcode[19:15]], imm+gpr[tid][opcode[19:15]]);
+    return $sformatf("%s%s,%0d(%s) [%h]", mn, abi_reg[opcode[24:20]], imm, abi_reg[opcode[19:15]], imm+gpr[0][tid][opcode[19:15]]);
 endfunction
 
 function string dasm32_ai( input[31:0] opcode);
@@ -453,8 +458,8 @@ endfunction
 //atomics
 function string dasm32_a(input[31:0] opcode, input tid=0);
     case(opcode[31:27])
-    'b00010: return $sformatf("lr.w    %s,(%s) [%h]",    abi_reg[opcode[11:7]],                         abi_reg[opcode[19:15]], gpr[tid][opcode[19:15]]);
-    'b00011: return $sformatf("sc.w    %s,%s,(%s) [%h]", abi_reg[opcode[11:7]], abi_reg[opcode[24:20]], abi_reg[opcode[19:15]], gpr[tid][opcode[19:15]]);
+    'b00010: return $sformatf("lr.w    %s,(%s) [%h]",    abi_reg[opcode[11:7]],                         abi_reg[opcode[19:15]], gpr[0][tid][opcode[19:15]]);
+    'b00011: return $sformatf("sc.w    %s,%s,(%s) [%h]", abi_reg[opcode[11:7]], abi_reg[opcode[24:20]], abi_reg[opcode[19:15]], gpr[0][tid][opcode[19:15]]);
     'b00001: return {"amoswap.w", dasm32_amo(opcode, tid)};
     'b00000: return {"amoadd.w",  dasm32_amo(opcode, tid)};
     'b00100: return {"amoxor.w",  dasm32_amo(opcode, tid)};
@@ -469,5 +474,5 @@ function string dasm32_a(input[31:0] opcode, input tid=0);
 endfunction
 
 function string dasm32_amo( input[31:0] opcode, input tid=0);
-    return $sformatf(" %s,%s,(%s) [%h]", abi_reg[opcode[11:7]], abi_reg[opcode[24:20]], abi_reg[opcode[19:15]], gpr[tid][opcode[19:15]]);
+    return $sformatf(" %s,%s,(%s) [%h]", abi_reg[opcode[11:7]], abi_reg[opcode[24:20]], abi_reg[opcode[19:15]], gpr[0][tid][opcode[19:15]]);
 endfunction
