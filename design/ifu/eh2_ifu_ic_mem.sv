@@ -33,7 +33,7 @@ import eh2_pkg::*;
       input logic [31:1]                            ic_rw_addr,
       input logic [pt.ICACHE_NUM_WAYS-1:0]          ic_wr_en  ,         // Which way to write
       input logic                                   ic_rd_en  ,         // Read enable
-       input logic [pt.ICACHE_INDEX_HI:3]           ic_debug_addr,      // Read/Write addresss to the Icache.
+      input logic [pt.ICACHE_INDEX_HI:3]            ic_debug_addr,      // Read/Write addresss to the Icache.
       input logic                                   ic_debug_rd_en,     // Icache debug rd
       input logic                                   ic_debug_wr_en,     // Icache debug wr
       input logic                                   ic_debug_tag_array, // Debug tag array
