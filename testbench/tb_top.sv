@@ -71,7 +71,7 @@ module tb_top;
     logic [`RV_NUM_CORES-1:0]                      o_cpu_halt_status;
     logic [`RV_NUM_CORES-1:0]                      o_cpu_run_ack;
 
-    logic                       mailbox_write;
+    logic                       [`RV_NUM_CORES-1:0]mailbox_write;
     logic        [`RV_NUM_CORES-1:0] [63:0]         dma_hrdata;
     logic        [`RV_NUM_CORES-1:0] [63:0]         dma_hwdata;
     logic [`RV_NUM_CORES-1:0]                       dma_hready;
@@ -85,15 +85,15 @@ module tb_top;
     logic [`RV_NUM_CORES-1:0]                       debug_brkpt_status;
 
     bit        [31:0]           cycleCnt;
-    logic                       mailbox_data_val;
+    logic                       [`RV_NUM_CORES-1:0]mailbox_data_val;
 
     wire                        dma_hready_out;
-    int                         commit_count[2];
+    int                         commit_count[`RV_NUM_CORES-1:0][2];
 
-    logic [1:0]                 wb_valid;
-    logic [1:0][4:0]            wb_dest;
-    logic [1:0][31:0]           wb_data;
-    logic [1:0]                 wb_tid;
+    logic [`RV_NUM_CORES-1:0][1:0]                 wb_valid;
+    logic [`RV_NUM_CORES-1:0][1:0][4:0]            wb_dest;
+    logic [`RV_NUM_CORES-1:0][1:0][31:0]           wb_data;
+    logic [`RV_NUM_CORES-1:0][1:0]                 wb_tid;
 
    //-------------------------- LSU AXI signals--------------------------
    // AXI Write Channels
@@ -298,27 +298,41 @@ module tb_top;
     wire [`RV_NUM_CORES-1:0]                        lmem_axi_bready;
 
 
-    string                      abi_reg[32]; // ABI register names
-    wire[63:0]                  WriteData;
+    string                     abi_reg[32]; // ABI register names
+    string                     abi_reg_1[32]; // ABI register names
+    wire [`RV_NUM_CORES-1:0][63:0]                  WriteData;
     wire                        tck, tms, tdi, tdo, trstn, srstn;
-    wire [31:0]                 minstret[2], mcycle[2];
+    wire [`RV_NUM_CORES-1:0][31:0]                 minstret[2], mcycle[2];
 
 `define DEC rvtop.swerv_0.dec
+`define DEC1 rvtop.swerv_1.dec
 
-    assign mailbox_write = lmem.mailbox_write;
-    assign WriteData = lmem.WriteData;
-    assign mailbox_data_val = WriteData[7:0] > 8'h5 && WriteData[7:0] < 8'h7f;
+    assign mailbox_write[0] = lmem.mailbox_write[0];
+    assign WriteData[0] = lmem.WriteData[0];
+    assign mailbox_data_val[0] = WriteData[0][7:0] > 8'h5 && WriteData[0][7:0] < 8'h7f;
+    
+    assign mailbox_write[1] = lmem.mailbox_write[1];
+    assign WriteData[1] = lmem.WriteData[1];
+    assign mailbox_data_val[1] = WriteData[1][7:0] > 8'h5 && WriteData[1][7:0] < 8'h7f;
 
-    assign minstret[0] = `DEC.tlu.tlumt[0].tlu.minstretl;
-    assign mcycle[0]   = `DEC.tlu.tlumt[0].tlu.mcyclel;
-    assign minstret[1] = `DEC.tlu.tlumt[`RV_NUM_THREADS-1].tlu.minstretl;
-    assign mcycle[1]   = `DEC.tlu.tlumt[`RV_NUM_THREADS-1].tlu.mcyclel;
+    assign minstret[0][0] = `DEC.tlu.tlumt[0].tlu.minstretl;
+    assign mcycle[0][0]   = `DEC.tlu.tlumt[0].tlu.mcyclel;
+    assign minstret[0][1] = `DEC.tlu.tlumt[`RV_NUM_THREADS-1].tlu.minstretl;
+    assign mcycle[0][1]   = `DEC.tlu.tlumt[`RV_NUM_THREADS-1].tlu.mcyclel;
+    
+    assign minstret[1][0] = `DEC1.tlu.tlumt[0].tlu.minstretl;
+    assign mcycle[1][0]   = `DEC1.tlu.tlumt[0].tlu.mcyclel;
+    assign minstret[1][1] = `DEC1.tlu.tlumt[`RV_NUM_THREADS-1].tlu.minstretl;
+    assign mcycle[1][1]   = `DEC1.tlu.tlumt[`RV_NUM_THREADS-1].tlu.mcyclel;
 
 
     parameter MAX_CYCLES = 10_000_000;
 
     integer fd, tp, el;
-
+    
+    int core_0_finish = 0;
+    int core_1_finish = 0;
+    
     always @(negedge core_clk) begin
         cycleCnt <= cycleCnt+1;
         // Test timeout monitor
@@ -327,20 +341,42 @@ module tb_top;
             $finish;
         end
         // console Monitor
-        if( mailbox_data_val & mailbox_write) begin
-            $fwrite(fd,"%c", WriteData[7:0]);
-            $write("%c", WriteData[7:0]);
+        if( mailbox_data_val[0] & mailbox_write[0]) begin
+            $fwrite(fd,"%c", WriteData[0][7:0]);
+            $write("%c", WriteData[0][7:0]);
+        end
+        if( mailbox_data_val[1] & mailbox_write[1]) begin
+            $fwrite(fd,"%c", WriteData[1][7:0]);
+            $write("%c", WriteData[1][7:0]);
         end
         // End Of test monitor
-        if(mailbox_write && WriteData[7:0] == 8'hff) begin
+        if(mailbox_write[0] && WriteData[0][7:0] == 8'hff && core_0_finish == 0) begin
             $display("TEST_PASSED");
-            $display("\nFinished hart0 : minstret = %0d, mcycle = %0d", minstret[0],mcycle[0]);
+            $display("\nFinished Core0 hart0 : minstret = %0d, mcycle = %0d", minstret[0][0],mcycle[0][0]);
             if(`RV_NUM_THREADS == 2)
-                $display("Finished hart1 : minstret = %0d, mcycle = %0d", minstret[1], mcycle[1]);
+                $display("Finished Core0 hart1 : minstret = %0d, mcycle = %0d", minstret[0][1], mcycle[0][1]);
             $display("See \"exec.log\" for execution trace with register updates..\n");
+            core_0_finish = 1;
+            //$finish;
+        end
+        if(mailbox_write[1] && WriteData[1][7:0] == 8'hff && core_1_finish == 0) begin
+            $display("TEST_PASSED");
+            $display("\nFinished Core1 hart0 : minstret = %0d, mcycle = %0d", minstret[1][0],mcycle[1][0]);
+            if(`RV_NUM_THREADS == 2)
+                $display("Finished Core1 hart1 : minstret = %0d, mcycle = %0d", minstret[1][1], mcycle[1][1]);
+            $display("See \"exec.log\" for execution trace with register updates..\n");
+            core_1_finish = 1;
+            //$finish;
+        end
+        if (core_0_finish && core_1_finish) begin
+            $display("BOTH CORES FINISHED SUCCESSFULLY");
             $finish;
         end
-        else if(mailbox_write && WriteData[7:0] == 8'h1) begin
+        else if(mailbox_write[0] && WriteData[0][7:0] == 8'h1) begin
+            $display("TEST_FAILED");
+            $finish;
+        end
+        else if(mailbox_write[1] && WriteData[1][7:0] == 8'h1) begin
             $display("TEST_FAILED");
             $finish;
         end
@@ -349,76 +385,140 @@ module tb_top;
 
     // trace monitor
     always @(posedge core_clk) begin
-         wb_valid[1:0]  <= '{`DEC.dec_i1_wen_wb,   `DEC.dec_i0_wen_wb};
-         wb_dest        <= '{`DEC.dec_i1_waddr_wb, `DEC.dec_i0_waddr_wb};
-         wb_data        <= '{`DEC.dec_i1_wdata_wb, `DEC.dec_i0_wdata_wb};
-         wb_tid         <= '{`DEC.dec_i1_tid_wb,   `DEC.dec_i0_tid_wb};
-         for(int t=0; t<`RV_NUM_THREADS; t++) begin
-             if (trace_rv_i_valid_ip[0][t] !== 0) begin
-                $fwrite(tp,"t%0d %b,%h,%h,%0h,%0h,3,%b,%h,%h,%b\n",t, trace_rv_i_valid_ip[0][t], trace_rv_i_address_ip[0][t][63:32], trace_rv_i_address_ip[0][t][31:0],
-                       trace_rv_i_insn_ip[0][t][63:32], trace_rv_i_insn_ip[0][t][31:0],trace_rv_i_exception_ip[0][t],trace_rv_i_ecause_ip[0][t],
-                       trace_rv_i_tval_ip[0][t],trace_rv_i_interrupt_ip[0][t]);
-                // Basic trace - no exception register updates
-                // #1 0 ee000000 b0201073 c 0b02       00000000
-                for (int i=0; i<2; i++)
-                    if (trace_rv_i_valid_ip[0][t][i]==1) begin
-                        bit i0;
-                        i0 = i != 0 || trace_rv_i_valid_ip[0][t]!=3 && wb_tid[1] == t && wb_valid[1];
-                        commit_count[t]++;
-                        $fwrite (el, "%10d : %8s %0d %h %h%13s ; %s\n",cycleCnt, $sformatf("#%0d",commit_count[t]), t,
-                                trace_rv_i_address_ip[0][t][31+i*32 -:32], trace_rv_i_insn_ip[0][t][31+i*32-:32],
-                                (wb_dest[i0] !=0 && wb_valid[i0]) ?  $sformatf("%s=%h", abi_reg[wb_dest[i0]], wb_data[i0]) : "             ",
-                                dasm(trace_rv_i_insn_ip[0][t][31+i*32 -:32], trace_rv_i_address_ip[0][t][31+i*32-:32], wb_dest[i0] & {5{wb_valid[i0]}}, wb_data[i0], t)
-                                );
-                    end
-            end
-            if(`DEC.dec_nonblock_load_wen[t]) begin
-                $fwrite (el, "%10d : %10d%22s=%h ; nbL\n", cycleCnt, `DEC.lsu_nonblock_load_data_tid, abi_reg[`DEC.dec_nonblock_load_waddr[t]], `DEC.lsu_nonblock_load_data);
-                tb_top.gpr[t][`DEC.dec_nonblock_load_waddr[t]] = `DEC.lsu_nonblock_load_data;
-                // Check this GPR
-            end
-        end
+         wb_valid[0][1:0]  <= '{`DEC.dec_i1_wen_wb,   `DEC.dec_i0_wen_wb};
+         wb_dest[0]        <= '{`DEC.dec_i1_waddr_wb, `DEC.dec_i0_waddr_wb};
+         wb_data[0]        <= '{`DEC.dec_i1_wdata_wb, `DEC.dec_i0_wdata_wb};
+         wb_tid[0]         <= '{`DEC.dec_i1_tid_wb,   `DEC.dec_i0_tid_wb};
+         
+         wb_valid[1][1:0]  <= '{`DEC1.dec_i1_wen_wb,   `DEC1.dec_i0_wen_wb};
+         wb_dest[1]        <= '{`DEC1.dec_i1_waddr_wb, `DEC1.dec_i0_waddr_wb};
+         wb_data[1]        <= '{`DEC1.dec_i1_wdata_wb, `DEC1.dec_i0_wdata_wb};
+         wb_tid[1]         <= '{`DEC1.dec_i1_tid_wb,   `DEC1.dec_i0_tid_wb};
+         
+         for(int c=0; c<`RV_NUM_CORES; c++) begin
+		 for(int t=0; t<`RV_NUM_THREADS; t++) begin
+		     if (trace_rv_i_valid_ip[c][t] !== 0) begin
+		        $fwrite(tp,"t%0d %b,%h,%h,%0h,%0h,3,%b,%h,%h,%b\n",t, trace_rv_i_valid_ip[c][t], trace_rv_i_address_ip[c][t][63:32], trace_rv_i_address_ip[c][t][31:0],
+		               trace_rv_i_insn_ip[c][t][63:32], trace_rv_i_insn_ip[c][t][31:0],trace_rv_i_exception_ip[c][t],trace_rv_i_ecause_ip[c][t],
+		               trace_rv_i_tval_ip[c][t],trace_rv_i_interrupt_ip[c][t]);
+		        // Basic trace - no exception register updates
+		        // #1 0 ee000000 b0201073 c 0b02       00000000
+		        for (int i=0; i<2; i++)
+		            if (trace_rv_i_valid_ip[c][t][i]==1) begin
+		                bit i0;
+		                i0 = i != 0 || trace_rv_i_valid_ip[c][t]!=3 && wb_tid[c][1] == t && wb_valid[c][1];
+		                commit_count[c][t]++;
+		                if (c==0) begin
+				        $fwrite (el, "%10d : %8s %0d %h %h%13s ; %s\n",cycleCnt, $sformatf("#%0d",commit_count[c][t]), t,
+				                trace_rv_i_address_ip[c][t][31+i*32 -:32], trace_rv_i_insn_ip[c][t][31+i*32-:32],
+				                (wb_dest[c][i0] !=0 && wb_valid[c][i0]) ?  $sformatf("%s=%h", abi_reg[wb_dest[i0]], wb_data[c][i0]) : "             ",
+				                dasm(trace_rv_i_insn_ip[c][t][31+i*32 -:32], trace_rv_i_address_ip[c][t][31+i*32-:32], wb_dest[c][i0] & {5{wb_valid[c][i0]}}, wb_data[c][i0], t)
+				                );
+				 end
+				 if (c==1) begin
+					 $fwrite (el, "%10d : %8s %0d %h %h%13s ; %s\n",cycleCnt, $sformatf("#%0d",commit_count[c][t]), t,
+						        trace_rv_i_address_ip[c][t][31+i*32 -:32], trace_rv_i_insn_ip[c][t][31+i*32-:32],
+						        (wb_dest[c][i0] !=0 && wb_valid[c][i0]) ?  $sformatf("%s=%h", abi_reg_1[wb_dest[i0]], wb_data[c][i0]) : "             ",
+						        dasm(trace_rv_i_insn_ip[c][t][31+i*32 -:32], trace_rv_i_address_ip[c][t][31+i*32-:32], wb_dest[c][i0] & {5{wb_valid[c][i0]}}, wb_data[c][i0], t)
+						        );
+				end
+		            end
+		    end
+		    if (c==0) begin
+			    if(`DEC.dec_nonblock_load_wen[t]) begin
+				$fwrite (el, "%10d : %10d%22s=%h ; nbL\n", cycleCnt, `DEC.lsu_nonblock_load_data_tid, abi_reg[`DEC.dec_nonblock_load_waddr[t]], `DEC.lsu_nonblock_load_data);
+				tb_top.gpr[c][t][`DEC.dec_nonblock_load_waddr[t]] = `DEC.lsu_nonblock_load_data;
+				// Check this GPR
+			    end
+		    end
+		    if (c==1) begin
+		    	    if(`DEC1.dec_nonblock_load_wen[t]) begin
+				$fwrite (el, "%10d : %10d%22s=%h ; nbL\n", cycleCnt, `DEC1.lsu_nonblock_load_data_tid, abi_reg_1[`DEC1.dec_nonblock_load_waddr[t]], `DEC1.lsu_nonblock_load_data);
+				tb_top.gpr[c][t][`DEC1.dec_nonblock_load_waddr[t]] = `DEC1.lsu_nonblock_load_data;
+				// Check this GPR
+			    end
+		    end
+		end
+	end
         if(`DEC.exu_div_wren) begin
             $fwrite (el, "%10d : %10d%22s=%h ; nbD\n", cycleCnt, `DEC.div_tid_wb, abi_reg[`DEC.div_waddr_wb], `DEC.exu_div_result);
-            tb_top.gpr[`DEC.div_tid_wb][`DEC.div_waddr_wb] = `DEC.exu_div_result;
+            tb_top.gpr[0][`DEC.div_tid_wb][`DEC.div_waddr_wb] = `DEC.exu_div_result;
+            // Check this GPR
+        end
+        if(`DEC1.exu_div_wren) begin
+            $fwrite (el, "%10d : %10d%22s=%h ; nbD\n", cycleCnt, `DEC1.div_tid_wb, abi_reg_1[`DEC1.div_waddr_wb], `DEC1.exu_div_result);
+            tb_top.gpr[1][`DEC1.div_tid_wb][`DEC1.div_waddr_wb] = `DEC1.exu_div_result;
             // Check this GPR
         end
     end
 
 
     initial begin
-        abi_reg[0] = "zero";
-        abi_reg[1] = "ra";
-        abi_reg[2] = "sp";
-        abi_reg[3] = "gp";
-        abi_reg[4] = "tp";
-        abi_reg[5] = "t0";
-        abi_reg[6] = "t1";
-        abi_reg[7] = "t2";
-        abi_reg[8] = "s0";
-        abi_reg[9] = "s1";
-        abi_reg[10] = "a0";
-        abi_reg[11] = "a1";
-        abi_reg[12] = "a2";
-        abi_reg[13] = "a3";
-        abi_reg[14] = "a4";
-        abi_reg[15] = "a5";
-        abi_reg[16] = "a6";
-        abi_reg[17] = "a7";
-        abi_reg[18] = "s2";
-        abi_reg[19] = "s3";
-        abi_reg[20] = "s4";
-        abi_reg[21] = "s5";
-        abi_reg[22] = "s6";
-        abi_reg[23] = "s7";
-        abi_reg[24] = "s8";
-        abi_reg[25] = "s9";
-        abi_reg[26] = "s10";
-        abi_reg[27] = "s11";
-        abi_reg[28] = "t3";
-        abi_reg[29] = "t4";
-        abi_reg[30] = "t5";
-        abi_reg[31] = "t6";
+		abi_reg[0] = "zero";
+		abi_reg[1] = "ra";
+		abi_reg[2] = "sp";
+		abi_reg[3] = "gp";
+		abi_reg[4] = "tp";
+		abi_reg[5] = "t0";
+		abi_reg[6] = "t1";
+		abi_reg[7] = "t2";
+		abi_reg[8] = "s0";
+		abi_reg[9] = "s1";
+		abi_reg[10] = "a0";
+		abi_reg[11] = "a1";
+		abi_reg[12] = "a2";
+		abi_reg[13] = "a3";
+		abi_reg[14] = "a4";
+		abi_reg[15] = "a5";
+		abi_reg[16] = "a6";
+		abi_reg[17] = "a7";
+		abi_reg[18] = "s2";
+		abi_reg[19] = "s3";
+		abi_reg[20] = "s4";
+		abi_reg[21] = "s5";
+		abi_reg[22] = "s6";
+		abi_reg[23] = "s7";
+		abi_reg[24] = "s8";
+		abi_reg[25] = "s9";
+		abi_reg[26] = "s10";
+		abi_reg[27] = "s11";
+		abi_reg[28] = "t3";
+		abi_reg[29] = "t4";
+		abi_reg[30] = "t5";
+		abi_reg[31] = "t6";
+		
+		abi_reg_1[0] = "zero";
+		abi_reg_1[1] = "ra";
+		abi_reg_1[2] = "sp";
+		abi_reg_1[3] = "gp";
+		abi_reg_1[4] = "tp";
+		abi_reg_1[5] = "t0";
+		abi_reg_1[6] = "t1";
+		abi_reg_1[7] = "t2";
+		abi_reg_1[8] = "s0";
+		abi_reg_1[9] = "s1";
+		abi_reg_1[10] = "a0";
+		abi_reg_1[11] = "a1";
+		abi_reg_1[12] = "a2";
+		abi_reg_1[13] = "a3";
+		abi_reg_1[14] = "a4";
+		abi_reg_1[15] = "a5";
+		abi_reg_1[16] = "a6";
+		abi_reg_1[17] = "a7";
+		abi_reg_1[18] = "s2";
+		abi_reg_1[19] = "s3";
+		abi_reg_1[20] = "s4";
+		abi_reg_1[21] = "s5";
+		abi_reg_1[22] = "s6";
+		abi_reg_1[23] = "s7";
+		abi_reg_1[24] = "s8";
+		abi_reg_1[25] = "s9";
+		abi_reg_1[26] = "s10";
+		abi_reg_1[27] = "s11";
+		abi_reg_1[28] = "t3";
+		abi_reg_1[29] = "t4";
+		abi_reg_1[30] = "t5";
+		abi_reg_1[31] = "t6";
     // tie offs
         jtag_id[31:28] = 4'b1;
         jtag_id[27:12] = '0;
@@ -434,8 +534,10 @@ module tb_top;
         $fwrite (el, "//   Cycle : #inst  hart   pc    opcode    reg=value   ; mnemonic\n");
         $fwrite (el, "//---------------------------------------------------------------\n");
         fd = $fopen("console.log","w");
-        preload_dccm();
-        preload_iccm();
+        preload_dccm(0);
+        preload_dccm(1);
+        preload_iccm(0);
+        preload_iccm(1);
 
 `ifndef VERILATOR
         if($test$plusargs("dumpon")) $dumpvars;
@@ -802,17 +904,24 @@ function string dmi_reg_name ( int ra);
     endcase
 endfunction
 
-bit reg_read;
-bit[7:0] reg_addr;
+bit [`RV_NUM_CORES-1:0]reg_read;
+bit [`RV_NUM_CORES-1:0][7:0] reg_addr;
 
 // Debug Module monitor
 always @ (posedge core_clk) begin
     if(`CPU_TOP.dmi_reg_wr_en)
         $display("DM: %10d Write %s = %h", cycleCnt, dmi_reg_name(`CPU_TOP.dmi_reg_addr),`CPU_TOP.dmi_reg_wdata);
-    reg_read <= `CPU_TOP.dmi_reg_en & ~`CPU_TOP.dmi_reg_wr_en;
-    reg_addr <= `CPU_TOP.dmi_reg_addr;
-    if(reg_read)
-        $display("DM: %10d Read  %s = %h", cycleCnt, dmi_reg_name(reg_addr),`CPU_TOP.dmi_reg_rdata);
+    reg_read[0] <= `CPU_TOP.dmi_reg_en & ~`CPU_TOP.dmi_reg_wr_en;
+    reg_addr[0] <= `CPU_TOP.dmi_reg_addr;
+    if(reg_read[0])
+        $display("DM: %10d Read  %s = %h", cycleCnt, dmi_reg_name(reg_addr[0]),`CPU_TOP.dmi_reg_rdata);
+        
+    if(`CPU_TOP_1.dmi_reg_wr_en)
+        $display("DM: %10d Write %s = %h", cycleCnt, dmi_reg_name(`CPU_TOP_1.dmi_reg_addr),`CPU_TOP_1.dmi_reg_wdata);
+    reg_read[1] <= `CPU_TOP_1.dmi_reg_en & ~`CPU_TOP_1.dmi_reg_wr_en;
+    reg_addr[1] <= `CPU_TOP_1.dmi_reg_addr;
+    if(reg_read[1])
+        $display("DM: %10d Read  %s = %h", cycleCnt, dmi_reg_name(reg_addr[1]),`CPU_TOP_1.dmi_reg_rdata);
 end
 
 `ifdef RV_BUILD_AHB_LITE
@@ -903,39 +1012,39 @@ axi_slv #(.TAGW(`RV_IFU_BUS_TAG)) imem(
 
 axi_slv #(.TAGW(`RV_LSU_BUS_TAG)) lmem(
     .aclk(core_clk),
-    .rst_l(rst_l[0]),
-    .arvalid(lmem_axi_arvalid[0]),
-    .arready(lmem_axi_arready[0]),
-    .araddr(lsu_axi_araddr[0]),
-    .arid(lsu_axi_arid[0]),
-    .arlen(lsu_axi_arlen[0]),
-    .arburst(lsu_axi_arburst[0]),
-    .arsize(lsu_axi_arsize[0]),
+    .rst_l(rst_l),
+    .arvalid(lmem_axi_arvalid),
+    .arready(lmem_axi_arready),
+    .araddr(lsu_axi_araddr),
+    .arid(lsu_axi_arid),
+    .arlen(lsu_axi_arlen),
+    .arburst(lsu_axi_arburst),
+    .arsize(lsu_axi_arsize),
 
-    .rvalid(lmem_axi_rvalid[0]),
-    .rready(lmem_axi_rready[0]),
-    .rdata(lmem_axi_rdata[0]),
-    .rresp(lmem_axi_rresp[0]),
-    .rid(lmem_axi_rid[0]),
-    .rlast(lmem_axi_rlast[0]),
+    .rvalid(lmem_axi_rvalid),
+    .rready(lmem_axi_rready),
+    .rdata(lmem_axi_rdata),
+    .rresp(lmem_axi_rresp),
+    .rid(lmem_axi_rid),
+    .rlast(lmem_axi_rlast),
 
-    .awvalid(lmem_axi_awvalid[0]),
-    .awready(lmem_axi_awready[0]),
-    .awaddr(lsu_axi_awaddr[0]),
-    .awid(lsu_axi_awid[0]),
-    .awlen(lsu_axi_awlen[0]),
-    .awburst(lsu_axi_awburst[0]),
-    .awsize(lsu_axi_awsize[0]),
+    .awvalid(lmem_axi_awvalid),
+    .awready(lmem_axi_awready),
+    .awaddr(lsu_axi_awaddr),
+    .awid(lsu_axi_awid),
+    .awlen(lsu_axi_awlen),
+    .awburst(lsu_axi_awburst),
+    .awsize(lsu_axi_awsize),
 
-    .wdata(lsu_axi_wdata[0]),
-    .wstrb(lsu_axi_wstrb[0]),
-    .wvalid(lmem_axi_wvalid[0]),
-    .wready(lmem_axi_wready[0]),
+    .wdata(lsu_axi_wdata),
+    .wstrb(lsu_axi_wstrb),
+    .wvalid(lmem_axi_wvalid),
+    .wready(lmem_axi_wready),
 
-    .bvalid(lmem_axi_bvalid[0]),
-    .bready(lmem_axi_bready[0]),
-    .bresp(lmem_axi_bresp[0]),
-    .bid(lmem_axi_bid[0])
+    .bvalid(lmem_axi_bvalid),
+    .bready(lmem_axi_bready),
+    .bresp(lmem_axi_bresp),
+    .bid(lmem_axi_bid)
 );
 
 
@@ -1010,21 +1119,99 @@ axi_lsu_dma_bridge # (`RV_LSU_BUS_TAG,`RV_LSU_BUS_TAG ) bridge(
     .s1_bready(dma_axi_bready[0])
 );
 
+axi_lsu_dma_bridge # (`RV_LSU_BUS_TAG,`RV_LSU_BUS_TAG ) bridge_1(
+    .clk(core_clk),
+    .reset_l(rst_l[1]),
+
+    .m_arvalid(lsu_axi_arvalid[1]),
+    .m_arid(lsu_axi_arid[1]),
+    .m_araddr(lsu_axi_araddr[1]),
+    .m_arready(lsu_axi_arready[1]),
+
+    .m_rvalid(lsu_axi_rvalid[1]),
+    .m_rready(lsu_axi_rready[1]),
+    .m_rdata(lsu_axi_rdata[1]),
+    .m_rid(lsu_axi_rid[1]),
+    .m_rresp(lsu_axi_rresp[1]),
+    .m_rlast(lsu_axi_rlast[1]),
+
+    .m_awvalid(lsu_axi_awvalid[1]),
+    .m_awid(lsu_axi_awid[1]),
+    .m_awaddr(lsu_axi_awaddr[1]),
+    .m_awready(lsu_axi_awready[1]),
+
+    .m_wvalid(lsu_axi_wvalid[1]),
+    .m_wready(lsu_axi_wready[1]),
+
+    .m_bresp(lsu_axi_bresp[1]),
+    .m_bvalid(lsu_axi_bvalid[1]),
+    .m_bid(lsu_axi_bid[1]),
+    .m_bready(lsu_axi_bready[1]),
+
+    .s0_arvalid(lmem_axi_arvalid[1]),
+    .s0_arready(lmem_axi_arready[1]),
+
+    .s0_rvalid(lmem_axi_rvalid[1]),
+    .s0_rid(lmem_axi_rid[1]),
+    .s0_rresp(lmem_axi_rresp[1]),
+    .s0_rdata(lmem_axi_rdata[1]),
+    .s0_rlast(lmem_axi_rlast[1]),
+    .s0_rready(lmem_axi_rready[1]),
+
+    .s0_awvalid(lmem_axi_awvalid[1]),
+    .s0_awready(lmem_axi_awready[1]),
+
+    .s0_wvalid(lmem_axi_wvalid[1]),
+    .s0_wready(lmem_axi_wready[1]),
+
+    .s0_bresp(lmem_axi_bresp[1]),
+    .s0_bvalid(lmem_axi_bvalid[1]),
+    .s0_bid(lmem_axi_bid[1]),
+    .s0_bready(lmem_axi_bready[1]),
+
+
+    .s1_arvalid(dma_axi_arvalid[1]),
+    .s1_arready(dma_axi_arready[1]),
+
+    .s1_rvalid(dma_axi_rvalid[1]),
+    .s1_rresp(dma_axi_rresp[1]),
+    .s1_rdata(dma_axi_rdata[1]),
+    .s1_rlast(dma_axi_rlast[1]),
+    .s1_rready(dma_axi_rready[1]),
+
+    .s1_awvalid(dma_axi_awvalid[1]),
+    .s1_awready(dma_axi_awready[1]),
+
+    .s1_wvalid(dma_axi_wvalid[1]),
+    .s1_wready(dma_axi_wready[1]),
+
+    .s1_bresp(dma_axi_bresp[1]),
+    .s1_bvalid(dma_axi_bvalid[1]),
+    .s1_bready(dma_axi_bready[1])
+);
+
 `endif
 
-task preload_iccm;
+task preload_iccm(input [`RV_NUM_CORES-1:0] core_id);
 bit[31:0] data;
 bit[31:0] addr, eaddr, saddr;
 
-/*
+/* Core 0
 addresses:
  0xfffffff0 - ICCM start address to load
  0xfffffff4 - ICCM end address to load
 */
+/* Core 1
+addresses:
+ 0xffffffe0 - ICCM start address to load
+ 0xffffffe4 - ICCM end address to load
+*/
 `ifndef VERILATOR
-init_iccm();
+init_iccm(core_id);
 `endif
-addr = 'hffff_fff0;
+if (core_id==0) addr = 'hffff_fff0;
+//if (core_id==1) addr = 'hffff_ffe0;
+if (core_id==1) addr = 'hffff_fff0;
 saddr = {lmem.mem[addr+3],lmem.mem[addr+2],lmem.mem[addr+1],lmem.mem[addr]};
 if ( (saddr < `RV_ICCM_SADR) || (saddr > `RV_ICCM_EADR)) return;
 `ifndef RV_ICCM_ENABLE
@@ -1039,26 +1226,35 @@ $display("ICCM pre-load from %h to %h", saddr, eaddr);
 
 for(addr= saddr; addr <= eaddr; addr+=4) begin
     data = {imem.mem[addr+3],imem.mem[addr+2],imem.mem[addr+1],imem.mem[addr]};
-    slam_iccm_ram(addr, data == 0 ? 0 : {riscv_ecc32(data),data});
+    slam_iccm_ram(addr, data == 0 ? 0 : {riscv_ecc32(data),data}, core_id);
 end
 
 endtask
 
 
-task preload_dccm;
+task preload_dccm(input [`RV_NUM_CORES-1:0] core_id);
 bit[31:0] data;
 bit[31:0] addr, saddr, eaddr;
 
-/*
+/* Coere 0
 addresses:
  0xffff_fff8 - DCCM start address to load
  0xffff_fffc - DCCM end address to load
 */
+
+/* Core 1
+addresses:
+ 0xffff_ffe8 - DCCM start address to load
+ 0xffff_ffec - DCCM end address to load
+*/
 `ifndef VERILATOR
-init_dccm();
+init_dccm(core_id);
 `endif
 
-addr = 'hffff_fff8;
+if (core_id==0) addr = 'hffff_fff8;
+//if (core_id==1) addr = 'hffff_ffe8;
+if (core_id==1) addr = 'hffff_fff8;
+
 saddr = {lmem.mem[addr+3],lmem.mem[addr+2],lmem.mem[addr+1],lmem.mem[addr]};
 if (saddr < `RV_DCCM_SADR || saddr > `RV_DCCM_EADR) return;
 `ifndef RV_DCCM_ENABLE
@@ -1073,7 +1269,7 @@ $display("DCCM pre-load from %h to %h", saddr, eaddr);
 
 for(addr=saddr; addr <= eaddr; addr+=4) begin
     data = {lmem.mem[addr+3],lmem.mem[addr+2],lmem.mem[addr+1],lmem.mem[addr]};
-    slam_dccm_ram(addr, data == 0 ? 0 : {riscv_ecc32(data),data});
+    slam_dccm_ram(addr, data == 0 ? 0 : {riscv_ecc32(data),data}, core_id);
 end
 
 endtask
@@ -1087,115 +1283,237 @@ endtask
 `define IRAM(bk) `ICCM_PATH.mem_bank[bk].iccm.iccm_bank.ram_core
 `endif
 
+`define ICCM_PATH_1 `RV_TOP.mem.iccm.iccm_1
+`ifdef VERILATOR
+`define DRAM_1(bk) rvtop.mem.Gen_dccm_enable.dccm_1.mem_bank[bk].ram.ram_core
+`define IRAM_1(bk) `ICCM_PATH_1.mem_bank[bk].iccm_bank.ram_core
+`else
+`define DRAM_1(bk) rvtop.mem.Gen_dccm_enable.dccm_1.mem_bank[bk].dccm.dccm_bank.ram_core
+`define IRAM_1(bk) `ICCM_PATH_1.mem_bank[bk].iccm.iccm_bank.ram_core
+`endif
 
-task slam_dccm_ram(input [31:0] addr, input[38:0] data);
+
+task slam_dccm_ram(input [31:0] addr, input[38:0] data, input [`RV_NUM_CORES-1:0] core_id);
 int bank, indx;
 bank = get_dccm_bank(addr, indx);
-`ifdef RV_DCCM_ENABLE
-case(bank)
-0: `DRAM(0)[indx] = data;
-1: `DRAM(1)[indx] = data;
-`ifdef RV_DCCM_NUM_BANKS_4
-2: `DRAM(2)[indx] = data;
-3: `DRAM(3)[indx] = data;
-`endif
-`ifdef RV_DCCM_NUM_BANKS_8
-2: `DRAM(2)[indx] = data;
-3: `DRAM(3)[indx] = data;
-4: `DRAM(4)[indx] = data;
-5: `DRAM(5)[indx] = data;
-6: `DRAM(6)[indx] = data;
-7: `DRAM(7)[indx] = data;
-`endif
-endcase
-`endif
+
+if (core_id==0) begin
+	`ifdef RV_DCCM_ENABLE
+	case(bank)
+	0: `DRAM(0)[indx] = data;
+	1: `DRAM(1)[indx] = data;
+	`ifdef RV_DCCM_NUM_BANKS_4
+	2: `DRAM(2)[indx] = data;
+	3: `DRAM(3)[indx] = data;
+	`endif
+	`ifdef RV_DCCM_NUM_BANKS_8
+	2: `DRAM(2)[indx] = data;
+	3: `DRAM(3)[indx] = data;
+	4: `DRAM(4)[indx] = data;
+	5: `DRAM(5)[indx] = data;
+	6: `DRAM(6)[indx] = data;
+	7: `DRAM(7)[indx] = data;
+	`endif
+	endcase
+	`endif
+end
+
+if (core_id==1) begin
+	`ifdef RV_DCCM_ENABLE
+	case(bank)
+	0: `DRAM_1(0)[indx] = data;
+	1: `DRAM_1(1)[indx] = data;
+	`ifdef RV_DCCM_NUM_BANKS_4
+	2: `DRAM_1(2)[indx] = data;
+	3: `DRAM_1(3)[indx] = data;
+	`endif
+	`ifdef RV_DCCM_NUM_BANKS_8
+	2: `DRAM_1(2)[indx] = data;
+	3: `DRAM_1(3)[indx] = data;
+	4: `DRAM_1(4)[indx] = data;
+	5: `DRAM_1(5)[indx] = data;
+	6: `DRAM_1(6)[indx] = data;
+	7: `DRAM_1(7)[indx] = data;
+	`endif
+	endcase
+	`endif
+end
 endtask
 
-task init_dccm();
-`ifdef RV_DCCM_ENABLE
-    `DRAM(0) = '{default:39'h0};
-    `DRAM(1) = '{default:39'h0};
-`ifdef RV_DCCM_NUM_BANKS_4
-    `DRAM(2) = '{default:39'h0};
-    `DRAM(3) = '{default:39'h0};
-`endif
-`ifdef RV_DCCM_NUM_BANKS_8
-    `DRAM(2) = '{default:39'h0};
-    `DRAM(3) = '{default:39'h0};
-    `DRAM(4) = '{default:39'h0};
-    `DRAM(5) = '{default:39'h0};
-    `DRAM(6) = '{default:39'h0};
-    `DRAM(7) = '{default:39'h0};
-`endif
-`endif
+task init_dccm(input [`RV_NUM_CORES-1:0] core_id);
+if (core_id==0) begin
+	`ifdef RV_DCCM_ENABLE
+	    `DRAM(0) = '{default:39'h0};
+	    `DRAM(1) = '{default:39'h0};
+	`ifdef RV_DCCM_NUM_BANKS_4
+	    `DRAM(2) = '{default:39'h0};
+	    `DRAM(3) = '{default:39'h0};
+	`endif
+	`ifdef RV_DCCM_NUM_BANKS_8
+	    `DRAM(2) = '{default:39'h0};
+	    `DRAM(3) = '{default:39'h0};
+	    `DRAM(4) = '{default:39'h0};
+	    `DRAM(5) = '{default:39'h0};
+	    `DRAM(6) = '{default:39'h0};
+	    `DRAM(7) = '{default:39'h0};
+	`endif
+	`endif
+end
+if (core_id==1) begin
+	`ifdef RV_DCCM_ENABLE
+	    `DRAM_1(0) = '{default:39'h0};
+	    `DRAM_1(1) = '{default:39'h0};
+	`ifdef RV_DCCM_NUM_BANKS_4
+	    `DRAM_1(2) = '{default:39'h0};
+	    `DRAM_1(3) = '{default:39'h0};
+	`endif
+	`ifdef RV_DCCM_NUM_BANKS_8
+	    `DRAM_1(2) = '{default:39'h0};
+	    `DRAM_1(3) = '{default:39'h0};
+	    `DRAM_1(4) = '{default:39'h0};
+	    `DRAM_1(5) = '{default:39'h0};
+	    `DRAM_1(6) = '{default:39'h0};
+	    `DRAM_1(7) = '{default:39'h0};
+	`endif
+	`endif
+end
 endtask
 
 
-task slam_iccm_ram( input[31:0] addr, input[38:0] data);
+task slam_iccm_ram( input[31:0] addr, input[38:0] data, input [`RV_NUM_CORES-1:0] core_id);
 int bank, idx;
 
 bank = get_iccm_bank(addr, idx);
-`ifdef RV_ICCM_ENABLE
-case(bank) // {
-  0: `IRAM(0)[idx] = data;
-  1: `IRAM(1)[idx] = data;
-  2: `IRAM(2)[idx] = data;
-  3: `IRAM(3)[idx] = data;
 
- `ifdef RV_ICCM_NUM_BANKS_8
-  4: `IRAM(4)[idx] = data;
-  5: `IRAM(5)[idx] = data;
-  6: `IRAM(6)[idx] = data;
-  7: `IRAM(7)[idx] = data;
- `endif
+if (core_id==0) begin
+	`ifdef RV_ICCM_ENABLE
+	case(bank) // {
+	  0: `IRAM(0)[idx] = data;
+	  1: `IRAM(1)[idx] = data;
+	  2: `IRAM(2)[idx] = data;
+	  3: `IRAM(3)[idx] = data;
 
- `ifdef RV_ICCM_NUM_BANKS_16
-  4: `IRAM(4)[idx] = data;
-  5: `IRAM(5)[idx] = data;
-  6: `IRAM(6)[idx] = data;
-  7: `IRAM(7)[idx] = data;
-  8: `IRAM(8)[idx] = data;
-  9: `IRAM(9)[idx] = data;
-  10: `IRAM(10)[idx] = data;
-  11: `IRAM(11)[idx] = data;
-  12: `IRAM(12)[idx] = data;
-  13: `IRAM(13)[idx] = data;
-  14: `IRAM(14)[idx] = data;
-  15: `IRAM(15)[idx] = data;
- `endif
-endcase // }
-`endif
+	 `ifdef RV_ICCM_NUM_BANKS_8
+	  4: `IRAM(4)[idx] = data;
+	  5: `IRAM(5)[idx] = data;
+	  6: `IRAM(6)[idx] = data;
+	  7: `IRAM(7)[idx] = data;
+	 `endif
+
+	 `ifdef RV_ICCM_NUM_BANKS_16
+	  4: `IRAM(4)[idx] = data;
+	  5: `IRAM(5)[idx] = data;
+	  6: `IRAM(6)[idx] = data;
+	  7: `IRAM(7)[idx] = data;
+	  8: `IRAM(8)[idx] = data;
+	  9: `IRAM(9)[idx] = data;
+	  10: `IRAM(10)[idx] = data;
+	  11: `IRAM(11)[idx] = data;
+	  12: `IRAM(12)[idx] = data;
+	  13: `IRAM(13)[idx] = data;
+	  14: `IRAM(14)[idx] = data;
+	  15: `IRAM(15)[idx] = data;
+	 `endif
+	endcase // }
+	`endif
+end
+
+if (core_id==1) begin
+	`ifdef RV_ICCM_ENABLE
+	case(bank) // {
+	  0: `IRAM_1(0)[idx] = data;
+	  1: `IRAM_1(1)[idx] = data;
+	  2: `IRAM_1(2)[idx] = data;
+	  3: `IRAM_1(3)[idx] = data;
+
+	 `ifdef RV_ICCM_NUM_BANKS_8
+	  4: `IRAM_1(4)[idx] = data;
+	  5: `IRAM_1(5)[idx] = data;
+	  6: `IRAM_1(6)[idx] = data;
+	  7: `IRAM_1(7)[idx] = data;
+	 `endif
+
+	 `ifdef RV_ICCM_NUM_BANKS_16
+	  4: `IRAM_1(4)[idx] = data;
+	  5: `IRAM_1(5)[idx] = data;
+	  6: `IRAM_1(6)[idx] = data;
+	  7: `IRAM_1(7)[idx] = data;
+	  8: `IRAM_1(8)[idx] = data;
+	  9: `IRAM_1(9)[idx] = data;
+	  10: `IRAM_1(10)[idx] = data;
+	  11: `IRAM_1(11)[idx] = data;
+	  12: `IRAM_1(12)[idx] = data;
+	  13: `IRAM_1(13)[idx] = data;
+	  14: `IRAM_1(14)[idx] = data;
+	  15: `IRAM_1(15)[idx] = data;
+	 `endif
+	endcase // }
+	`endif
+end
 endtask
 
-task init_iccm;
-`ifdef RV_ICCM_ENABLE
-    `IRAM(0) = '{default:39'h0};
-    `IRAM(1) = '{default:39'h0};
-    `IRAM(2) = '{default:39'h0};
-    `IRAM(3) = '{default:39'h0};
+task init_iccm(input [`RV_NUM_CORES-1:0] core_id);
+if (core_id==0) begin
+	`ifdef RV_ICCM_ENABLE
+	    `IRAM(0) = '{default:39'h0};
+	    `IRAM(1) = '{default:39'h0};
+	    `IRAM(2) = '{default:39'h0};
+	    `IRAM(3) = '{default:39'h0};
 
-`ifdef RV_ICCM_NUM_BANKS_8
-    `IRAM(4) = '{default:39'h0};
-    `IRAM(5) = '{default:39'h0};
-    `IRAM(6) = '{default:39'h0};
-    `IRAM(7) = '{default:39'h0};
-`endif
+	`ifdef RV_ICCM_NUM_BANKS_8
+	    `IRAM(4) = '{default:39'h0};
+	    `IRAM(5) = '{default:39'h0};
+	    `IRAM(6) = '{default:39'h0};
+	    `IRAM(7) = '{default:39'h0};
+	`endif
 
-`ifdef RV_ICCM_NUM_BANKS_16
-    `IRAM(4) = '{default:39'h0};
-    `IRAM(5) = '{default:39'h0};
-    `IRAM(6) = '{default:39'h0};
-    `IRAM(7) = '{default:39'h0};
-    `IRAM(8) = '{default:39'h0};
-    `IRAM(9) = '{default:39'h0};
-    `IRAM(10) = '{default:39'h0};
-    `IRAM(11) = '{default:39'h0};
-    `IRAM(12) = '{default:39'h0};
-    `IRAM(13) = '{default:39'h0};
-    `IRAM(14) = '{default:39'h0};
-    `IRAM(15) = '{default:39'h0};
- `endif
-`endif
+	`ifdef RV_ICCM_NUM_BANKS_16
+	    `IRAM(4) = '{default:39'h0};
+	    `IRAM(5) = '{default:39'h0};
+	    `IRAM(6) = '{default:39'h0};
+	    `IRAM(7) = '{default:39'h0};
+	    `IRAM(8) = '{default:39'h0};
+	    `IRAM(9) = '{default:39'h0};
+	    `IRAM(10) = '{default:39'h0};
+	    `IRAM(11) = '{default:39'h0};
+	    `IRAM(12) = '{default:39'h0};
+	    `IRAM(13) = '{default:39'h0};
+	    `IRAM(14) = '{default:39'h0};
+	    `IRAM(15) = '{default:39'h0};
+	 `endif
+	`endif
+end
+
+if (core_id==1) begin
+	`ifdef RV_ICCM_ENABLE
+	    `IRAM_1(0) = '{default:39'h0};
+	    `IRAM_1(1) = '{default:39'h0};
+	    `IRAM_1(2) = '{default:39'h0};
+	    `IRAM_1(3) = '{default:39'h0};
+
+	`ifdef RV_ICCM_NUM_BANKS_8
+	    `IRAM_1(4) = '{default:39'h0};
+	    `IRAM_1(5) = '{default:39'h0};
+	    `IRAM_1(6) = '{default:39'h0};
+	    `IRAM_1(7) = '{default:39'h0};
+	`endif
+
+	`ifdef RV_ICCM_NUM_BANKS_16
+	    `IRAM_1(4) = '{default:39'h0};
+	    `IRAM_1(5) = '{default:39'h0};
+	    `IRAM_1(6) = '{default:39'h0};
+	    `IRAM_1(7) = '{default:39'h0};
+	    `IRAM_1(8) = '{default:39'h0};
+	    `IRAM_1(9) = '{default:39'h0};
+	    `IRAM_1(10) = '{default:39'h0};
+	    `IRAM_1(11) = '{default:39'h0};
+	    `IRAM_1(12) = '{default:39'h0};
+	    `IRAM_1(13) = '{default:39'h0};
+	    `IRAM_1(14) = '{default:39'h0};
+	    `IRAM_1(15) = '{default:39'h0};
+	 `endif
+	`endif
+end
 endtask
 
 

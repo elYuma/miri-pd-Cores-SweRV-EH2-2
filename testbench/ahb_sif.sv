@@ -137,92 +137,128 @@ endmodule
 module axi_slv #(TAGW=1) (
 input                   aclk,
 input                   rst_l,
-input                   arvalid,
-output reg              arready,
-input [31:0]            araddr,
-input [TAGW-1:0]        arid,
-input [7:0]             arlen,
-input [1:0]             arburst,
-input [2:0]             arsize,
+input [`RV_NUM_CORES-1:0]                  arvalid,
+output reg [`RV_NUM_CORES-1:0]             arready,
+input [`RV_NUM_CORES-1:0][31:0]            araddr,
+input [`RV_NUM_CORES-1:0][TAGW-1:0]        arid,
+input [`RV_NUM_CORES-1:0][7:0]             arlen,
+input [`RV_NUM_CORES-1:0][1:0]             arburst,
+input [`RV_NUM_CORES-1:0][2:0]             arsize,
 
-output reg              rvalid,
-input                   rready,
-output reg [63:0]       rdata,
-output reg [1:0]        rresp,
-output reg [TAGW-1:0]   rid,
-output                  rlast,
+output reg [`RV_NUM_CORES-1:0]             rvalid,
+input [`RV_NUM_CORES-1:0]                  rready,
+output reg [`RV_NUM_CORES-1:0][63:0]       rdata,
+output reg [`RV_NUM_CORES-1:0][1:0]        rresp,
+output reg [`RV_NUM_CORES-1:0][TAGW-1:0]   rid,
+output [`RV_NUM_CORES-1:0]                 rlast,
 
-input                   awvalid,
-output                  awready,
-input [31:0]            awaddr,
-input [TAGW-1:0]        awid,
-input [7:0]             awlen,
-input [1:0]             awburst,
-input [2:0]             awsize,
+input [`RV_NUM_CORES-1:0]                  awvalid,
+output [`RV_NUM_CORES-1:0]                 awready,
+input [`RV_NUM_CORES-1:0][31:0]            awaddr,
+input [`RV_NUM_CORES-1:0][TAGW-1:0]        awid,
+input [`RV_NUM_CORES-1:0][7:0]             awlen,
+input [`RV_NUM_CORES-1:0][1:0]             awburst,
+input [`RV_NUM_CORES-1:0][2:0]             awsize,
 
-input [63:0]            wdata,
-input [7:0]             wstrb,
-input                   wvalid,
-output                  wready,
+input [`RV_NUM_CORES-1:0][63:0]            wdata,
+input [`RV_NUM_CORES-1:0][7:0]             wstrb,
+input [`RV_NUM_CORES-1:0]                  wvalid,
+output [`RV_NUM_CORES-1:0]                 wready,
 
-output  reg             bvalid,
-input                   bready,
-output reg [1:0]        bresp,
-output reg [TAGW-1:0]   bid
+output  reg [`RV_NUM_CORES-1:0]            bvalid,
+input [`RV_NUM_CORES-1:0]                  bready,
+output reg [`RV_NUM_CORES-1:0][1:0]        bresp,
+output reg [`RV_NUM_CORES-1:0][TAGW-1:0]   bid
 );
 
 parameter MAILBOX_ADDR = 32'hD0580000;
 parameter MEM_SIZE_DW = 8192;
 
 bit [7:0] mem [bit[31:0]];
-bit [63:0] memdata;
-wire [63:0] WriteData;
-wire mailbox_write;
+bit [`RV_NUM_CORES-1:0][63:0] memdata;
+wire [`RV_NUM_CORES-1:0][63:0] WriteData;
+wire [`RV_NUM_CORES-1:0]mailbox_write;
 
-wire[31:0] raddr, waddr;
+wire[`RV_NUM_CORES-1:0][31:0] raddr, waddr;
 
-assign mailbox_write = awvalid && awaddr==MAILBOX_ADDR && rst_l;
-assign WriteData = wdata;
+assign mailbox_write[0] = awvalid[0] && awaddr[0]==MAILBOX_ADDR && rst_l;
+assign WriteData[0] = wdata[0];
+
+assign mailbox_write[1] = awvalid[1] && awaddr[1]==MAILBOX_ADDR && rst_l;
+assign WriteData[1] = wdata[1];
 
 always @ ( posedge aclk or negedge rst_l) begin
     if(!rst_l) begin
-        rvalid  <= 0;
-        bvalid  <= 0;
+        rvalid[0]  <= 0;
+        bvalid[0]  <= 0;
+        
+        rvalid[1]  <= 0;
+        bvalid[1]  <= 0;
     end
     else begin
-        bid     <= awid;
-        rid     <= arid;
-        rvalid  <= arvalid;
-        bvalid  <= awvalid;
-        rdata   <= memdata;
+        bid[0]     <= awid[0];
+        rid[0]     <= arid[0];
+        rvalid[0]  <= arvalid[0];
+        bvalid[0]  <= awvalid[0];
+        rdata[0]   <= memdata[0];
+        
+        bid[1]     <= awid[1];
+        rid[1]     <= arid[1];
+        rvalid[1]  <= arvalid[1];
+        bvalid[1]  <= awvalid[1];
+        rdata[1]   <= memdata[1];
     end
 end
 
-assign raddr = {araddr[31:3],3'b0};
-assign waddr = {awaddr[31:3],3'b0};
+assign raddr[0] = {araddr[0][31:3],3'b0};
+assign waddr[0] = {awaddr[0][31:3],3'b0};
+
+assign raddr[1] = {araddr[1][31:3],3'b0};
+assign waddr[1] = {awaddr[1][31:3],3'b0};
 
 always @ ( negedge aclk) begin
-    if(arvalid) memdata <= {mem[raddr+7], mem[raddr+6], mem[raddr+5], mem[raddr+4],
-                            mem[raddr+3], mem[raddr+2], mem[raddr+1], mem[raddr]};
-    if(awvalid) begin
-        if(wstrb[7]) mem[waddr+7] = wdata[63:56];
-        if(wstrb[6]) mem[waddr+6] = wdata[55:48];
-        if(wstrb[5]) mem[waddr+5] = wdata[47:40];
-        if(wstrb[4]) mem[waddr+4] = wdata[39:32];
-        if(wstrb[3]) mem[waddr+3] = wdata[31:24];
-        if(wstrb[2]) mem[waddr+2] = wdata[23:16];
-        if(wstrb[1]) mem[waddr+1] = wdata[15:08];
-        if(wstrb[0]) mem[waddr+0] = wdata[07:00];
+    if(arvalid[0]) memdata[0] <= {mem[raddr[0]+7], mem[raddr[0]+6], mem[raddr[0]+5], mem[raddr[0]+4],
+                            mem[raddr[0]+3], mem[raddr[0]+2], mem[raddr[0]+1], mem[raddr[0]]};
+    if(awvalid[0]) begin
+        if(wstrb[0][7]) mem[waddr[0]+7] = wdata[0][63:56];
+        if(wstrb[0][6]) mem[waddr[0]+6] = wdata[0][55:48];
+        if(wstrb[0][5]) mem[waddr[0]+5] = wdata[0][47:40];
+        if(wstrb[0][4]) mem[waddr[0]+4] = wdata[0][39:32];
+        if(wstrb[0][3]) mem[waddr[0]+3] = wdata[0][31:24];
+        if(wstrb[0][2]) mem[waddr[0]+2] = wdata[0][23:16];
+        if(wstrb[0][1]) mem[waddr[0]+1] = wdata[0][15:08];
+        if(wstrb[0][0]) mem[waddr[0]+0] = wdata[0][07:00];
+    end
+    
+    if(arvalid[1]) memdata[1] <= {mem[raddr[1]+7], mem[raddr[1]+6], mem[raddr[1]+5], mem[raddr[1]+4],
+                            mem[raddr[1]+3], mem[raddr[1]+2], mem[raddr[1]+1], mem[raddr[1]]};
+                            
+    if(awvalid[1]) begin
+        if(wstrb[1][7]) mem[waddr[1]+7] = wdata[1][63:56];
+        if(wstrb[1][6]) mem[waddr[1]+6] = wdata[1][55:48];
+        if(wstrb[1][5]) mem[waddr[1]+5] = wdata[1][47:40];
+        if(wstrb[1][4]) mem[waddr[1]+4] = wdata[1][39:32];
+        if(wstrb[1][3]) mem[waddr[1]+3] = wdata[1][31:24];
+        if(wstrb[1][2]) mem[waddr[1]+2] = wdata[1][23:16];
+        if(wstrb[1][1]) mem[waddr[1]+1] = wdata[1][15:08];
+        if(wstrb[1][0]) mem[waddr[1]+0] = wdata[1][07:00];
     end
 end
 
 
-assign arready = 1'b1;
-assign awready = 1'b1;
-assign wready  = 1'b1;
-assign rresp   = 2'b0;
-assign bresp   = 2'b0;
-assign rlast   = 1'b1;
+assign arready[0] = 1'b1;
+assign awready[0] = 1'b1;
+assign wready[0]  = 1'b1;
+assign rresp[0]   = 2'b0;
+assign bresp[0]   = 2'b0;
+assign rlast[0]   = 1'b1;
+
+assign arready[1] = 1'b1;
+assign awready[1] = 1'b1;
+assign wready[1]  = 1'b1;
+assign rresp[1]   = 2'b0;
+assign bresp[1]   = 2'b0;
+assign rlast[1]   = 1'b1;
 
 endmodule
 `endif
