@@ -744,7 +744,7 @@ end // else: !if(pt.NUM_THREADS > 1)
    assign dec_tlu_wb_coalescing_disable = mfdc[2];
    assign dec_tlu_pipelining_disable = mfdc[0];
 
-   // ----------------------------------------------------------------------
+   // ---------------------------------------------------------------------- CUSTOM CRS
    // MRAC (RW)
    // [31:0] : Region Access Control Register, 16 regions, {side_effect, cachable} pairs
    localparam MRAC          = 12'h7c0;

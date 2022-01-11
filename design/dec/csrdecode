@@ -79,6 +79,9 @@ csr_mcountinhibit = [001100100000]
 csr_mfdht =         [011111001110]
 csr_mfdhs =         [011111001111]
 
+csr_medeleg =       [001100000010]
+csr_mideleg =       [001100000011]
+
 .input
 
 csr = {
@@ -99,6 +102,9 @@ csr = {
 .output
 
 csr = {
+     csr_medeleg
+     csr_mideleg
+
      csr_misa
      csr_mvendorid
      csr_marchid
@@ -185,6 +191,9 @@ csr_mnmipdel
 }
 
 .decode
+
+csr[ csr_medeleg   ] = {  csr_medeleg postsync   }
+csr[ csr_mideleg   ] = {  csr_mideleg postsync   }
 
 csr[ csr_misa      ] = {  csr_misa glob     }
 csr[ csr_mvendorid ] = {  csr_mvendorid glob }

@@ -585,6 +585,28 @@ typedef struct packed {
                        logic csr_mhartnum;
                        logic csr_mhartstart;
                        logic csr_mnmipdel;
+
+                       // NEW Code: 
+                       // M-mode and U-mode only
+                       // mideleg and medeleg registers should be implemented
+                       logic csr_medeleg;
+                       logic csr_mideleg;
+
+
+                       // S-MODE CSR REGISTERS -------------------- remember to set misa S-extension or/and U-extension
+                       // no medeleg and mideleg implemented
+                       //logic csr_sstatus; use mstatus restricted view
+                       logic csr_stvec;
+                       //logic csr_sip;  mip mask
+                       //logic csr_sie;  mie mask
+                       logic csr_scounterren;
+                       logic csr_sscratch;
+                       logic csr_sepc;
+                       logic csr_scause;
+                       logic csr_stval;
+                       // logic csr_senvcfg; dont needed for ISA 1.11
+                       logic csr_satp;
+
                        logic valid_only;
                        logic presync;
                        logic postsync;

@@ -24,9 +24,9 @@
 
 module eh2_dec_csr
 import eh2_pkg::*;
-/*#(
-`include "eh2_param.sv"
-)*/
+#(
+`include "eh2_param.vh"
+)
   (
 
 
@@ -141,10 +141,6 @@ logic presync;
 logic postsync;
 logic glob;
 //logic ooat;
-
-// New Code
-logic csr_medeleg;
-logic csr_mideleg;
 
 logic conditionally_illegal, valid_csr;
 logic legal;

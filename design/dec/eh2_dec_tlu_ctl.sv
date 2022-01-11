@@ -1215,13 +1215,25 @@ end
    localparam MHARTID       = 12'hf14;
 
 
+   // ---- New code ----
+   localparam M_MODE        = 2'b11;   
+   localparam S_MODE        = 2'b01;   
+   localparam U_MODE        = 2'b00;   
+
+   localparam MEDELEG       =  12'h302;
+   logic [32:0] medeleg_reg;
+
+   localparam MIDELEG       =  12'h303;
+   logic [32:0] mieleg_reg;
+
    // ----------------------------------------------------------------------
    // MSTATUS (RW)
    // [12:11] MPP  : Prior priv level, always 2'b11, not flopped
    // [7]     MPIE : Int enable previous [1]
    // [3]     MIE  : Int enable          [0]
    localparam MSTATUS       = 12'h300;
-
+   logic [32:0] mstatus_reg;
+   // ---- ---- ----
 
    //When executing a MRET instruction, supposing MPP holds the value 3, MIE
    //is set to MPIE; the privilege mode is changed to 3; MPIE is set to 1; and MPP is set to 3
@@ -1240,6 +1252,9 @@ end
 
    // gate MIE if we are single stepping and DCSR[STEPIE] is off
    assign mstatus_mie_ns = mstatus_ns[MSTATUS_MIE] & (~dcsr_single_step_running_f | dcsr[DCSR_STEPIE]);
+
+   // ---- New code ----
+   assign mstatus_reg = {19'b0, 2'b11, 3'b0, mstatus[1], 3'b0, mstatus[0], 3'b0} 
 
    // ----------------------------------------------------------------------
    // MTVEC (RW)
@@ -1913,6 +1928,24 @@ end
    assign tlu_trigger_pkt_any[3].tdata2[31:0] = mtdata2_t3[31:0];
 
 
+      //----------------------------------------------------------------------
+      // Supervisor CSRs  new code
+      //----------------------------------------------------------------------
+   localparam SSTATUS                  = 12'h100;  // Supervisor status register.
+   localparam SIE                      = 12'h104;  // Supervisor interrupt-enable register.
+   localparam STVEC                    = 12'h105;  // Supervisor trap handler base address.
+   localparam SCOUNTEREN               = 12'h106;  // Supervisor counter enable.
+   localparam SENVCFG                  = 12'h10A;  // Supervisor environment configuration register.
+   localparam SSCRATCH                 = 12'h140;  // Scratch register for supervisor trap handlers.
+   localparam SEPC                     = 12'h141;  // Scratch register for supervisor trap handlers.
+   localparam SCAUSE                   = 12'h142;  // Supervisor trap cause.
+   localparam STVAL                    = 12'h143;  // Supervisor bad address or instruction.
+   localparam SIP                      = 12'h144;  // Supervisor interrupt pending.
+   localparam SATP                     = 12'h180;  // Supervisor address translation and protection.
+   localparam DSCONTEXT                = 12'h5A8;  // Supervisor-mode context register. (Debug/Trace Registers)
+   
+
+
    //----------------------------------------------------------------------
    // Performance Monitor Counters section starts
    //----------------------------------------------------------------------
@@ -2299,8 +2332,14 @@ end
    assign csr_rd = tlu_i0_csr_pkt_d;
 
 //   for( genvar i=0; i<2 ; i++) begin: CSR_rd_mux
-   assign csr_rddata_d[31:0] = (  ({32{csr_rd.csr_mhartid}}   & {core_id[31:4], 3'b0, mytid}) |
-                                  ({32{csr_rd.csr_mstatus}}   & {19'b0, 2'b11, 3'b0, mstatus[1], 3'b0, mstatus[0], 3'b0}) |
+   assign csr_rddata_d[31:0] = (  // NEW Code
+                                  ({32{csr_rd.csr_mstatus}}   & mstatus_reg) | 
+                                  ({32{csr_rd.csr_medeleg}}   & medeleg_reg) | 
+                                  ({32{csr_rd.csr_mideleg}}   & mideleg_reg) | 
+
+
+                                  ({32{csr_rd.csr_mhartid}}   & {core_id[31:4], 3'b0, mytid}) |
+                                  //({32{csr_rd.csr_mstatus}}   & {19'b0, 2'b11, 3'b0, mstatus[1], 3'b0, mstatus[0], 3'b0}) | 
                                   ({32{csr_rd.csr_mtvec}}     & {mtvec[30:1], 1'b0, mtvec[0]}) |
                                   ({32{csr_rd.csr_mip}}       & {1'b0, mip[5:3], 16'b0, mip[2], 3'b0, mip[1], 3'b0, mip[0], 3'b0}) |
                                   ({32{csr_rd.csr_mie}}       & {1'b0, mie[5:3], 16'b0, mie[2], 3'b0, mie[1], 3'b0, mie[0], 3'b0}) |
