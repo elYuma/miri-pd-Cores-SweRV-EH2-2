@@ -303,6 +303,9 @@ import eh2_pkg::*;
    input                             eh2_ic_data_ext_in_pkt_t  [pt.ICACHE_NUM_WAYS-1:0][pt.ICACHE_BANKS_WAY-1:0] ic_data_ext_in_pkt,
    input                             eh2_ic_tag_ext_in_pkt_t   [pt.ICACHE_NUM_WAYS-1:0]                        ic_tag_ext_in_pkt,
 
+   input                             eh2_dc_data_ext_in_pkt_t  [pt.ICACHE_NUM_WAYS-1:0][pt.ICACHE_BANKS_WAY-1:0] dc_data_ext_in_pkt,
+   input                             eh2_dc_tag_ext_in_pkt_t   [pt.ICACHE_NUM_WAYS-1:0]                        dc_tag_ext_in_pkt,
+
    input logic [pt.NUM_THREADS-1:0]  timer_int,
    input logic [pt.NUM_THREADS-1:0]  soft_int,
    input logic [pt.PIC_TOTAL_INT:1] extintsrc_req,
@@ -389,7 +392,7 @@ import eh2_pkg::*;
 
    // Dcache ports
    logic [31:1]  dc_rw_addr;
-   logic [pt.ICACHE_NUM_WAYS-1:0]   dc_wr_en  ;     // Which way to write
+   logic [pt.ICACHE_NUM_WAYS-1:0]   dc_wr_en;     // Which way to write
    logic         dc_rd_en ;
 
    logic [pt.ICACHE_NUM_WAYS-1:0]   dc_tag_valid;   // Valid from the I$ tag valid outside (in flops).

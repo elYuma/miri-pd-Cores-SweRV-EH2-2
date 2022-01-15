@@ -710,6 +710,8 @@ eh2_swerv_wrapper rvtop (
     .iccm_ext_in_pkt        ('0),
     .ic_data_ext_in_pkt     ('0),
     .ic_tag_ext_in_pkt      ('0),
+    .dc_data_ext_in_pkt     ('0),
+    .dc_tag_ext_in_pkt      ('0),
     .btb_ext_in_pkt         ('0),
     .trace_rv_i_insn_ip     (trace_rv_i_insn_ip),
     .trace_rv_i_address_ip  (trace_rv_i_address_ip),

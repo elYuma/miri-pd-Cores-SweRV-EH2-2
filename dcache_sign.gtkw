@@ -1,0 +1,116 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Sat Jan 15 16:50:54 2022
+[*]
+[dumpfile] "/home/yuma/Documents/MIRI-HPC/HPC-2/PD/Porject/SweRV-Dcache/miri-pd-Cores-SweRV-EH2-2/sim.vcd"
+[dumpfile_mtime] "Sat Jan 15 16:43:40 2022"
+[dumpfile_size] 69659254
+[savefile] "/home/yuma/Documents/MIRI-HPC/HPC-2/PD/Porject/SweRV-Dcache/miri-pd-Cores-SweRV-EH2-2/dcache_sign.gtkw"
+[timestart] 0
+[size] 1920 1131
+[pos] -51 -51
+*-7.000000 41 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] TOP.
+[treeopen] TOP.tb_top.
+[treeopen] TOP.tb_top.rvtop.
+[treeopen] TOP.tb_top.rvtop.swerv.
+[treeopen] TOP.tb_top.rvtop.swerv.lsu.
+[sst_width] 463
+[signals_width] 319
+[sst_expanded] 1
+[sst_vpaned_height] 329
+@200
+-Clock
+@28
+TOP.core_clk
+@200
+-
+-Dcache
+@22
+TOP.tb_top.rvtop.dc_data_ext_in_pkt[95:0]
+TOP.tb_top.rvtop.dc_debug_addr[12:3]
+TOP.tb_top.rvtop.dc_debug_rd_data[70:0]
+@28
+TOP.tb_top.rvtop.dc_debug_rd_en
+TOP.tb_top.rvtop.dc_debug_tag_array
+@22
+TOP.tb_top.rvtop.dc_debug_way[3:0]
+TOP.tb_top.rvtop.dc_debug_wr_data[70:0]
+@28
+TOP.tb_top.rvtop.dc_debug_wr_en
+TOP.tb_top.rvtop.dc_eccerr[1:0]
+TOP.tb_top.rvtop.dc_parerr[1:0]
+@22
+TOP.tb_top.rvtop.dc_premux_data[63:0]
+TOP.tb_top.rvtop.dc_rd_data[63:0]
+@28
+TOP.tb_top.rvtop.dc_rd_en
+@22
+TOP.tb_top.rvtop.dc_rd_hit[3:0]
+TOP.tb_top.rvtop.dc_rw_addr[31:1]
+@28
+TOP.tb_top.rvtop.dc_sel_premux_data
+@22
+TOP.tb_top.rvtop.dc_tag_ext_in_pkt[47:0]
+@28
+TOP.tb_top.rvtop.dc_tag_perr
+@22
+TOP.tb_top.rvtop.dc_tag_valid[3:0]
+TOP.tb_top.rvtop.dc_wr_data[141:0]
+TOP.tb_top.rvtop.dc_wr_en[3:0]
+@200
+-
+-stbuff
+@28
+TOP.tb_top.rvtop.swerv.lsu.lsu_stbuf_c1_clk
+TOP.tb_top.rvtop.swerv.lsu.lsu_stbuf_commit_any
+TOP.tb_top.rvtop.swerv.lsu.lsu_stbuf_empty_any[1:0]
+TOP.tb_top.rvtop.swerv.lsu.lsu_stbuf_full_any[1:0]
+@22
+TOP.tb_top.rvtop.swerv.lsu.stbuf_addr_any[16:0]
+TOP.tb_top.rvtop.swerv.lsu.stbuf_data_any[31:0]
+TOP.tb_top.rvtop.swerv.lsu.stbuf_fwdbyteen_hi_dc3[3:0]
+TOP.tb_top.rvtop.swerv.lsu.stbuf_fwdbyteen_lo_dc3[3:0]
+TOP.tb_top.rvtop.swerv.lsu.stbuf_fwddata_hi_dc3[31:0]
+TOP.tb_top.rvtop.swerv.lsu.stbuf_fwddata_lo_dc3[31:0]
+@28
+TOP.tb_top.rvtop.swerv.lsu.stbuf_reqvld_any
+TOP.tb_top.rvtop.swerv.lsu.stbuf_reqvld_flushed_any
+TOP.tb_top.rvtop.swerv.lsu.store_stbuf_reqvld_dc5
+@200
+-
+-icache
+@22
+TOP.tb_top.rvtop.ic_data_ext_in_pkt[95:0]
+TOP.tb_top.rvtop.ic_debug_addr[12:3]
+TOP.tb_top.rvtop.ic_debug_rd_data[70:0]
+@28
+TOP.tb_top.rvtop.ic_debug_rd_en
+TOP.tb_top.rvtop.ic_debug_tag_array
+@22
+TOP.tb_top.rvtop.ic_debug_way[3:0]
+TOP.tb_top.rvtop.ic_debug_wr_data[70:0]
+@28
+TOP.tb_top.rvtop.ic_debug_wr_en
+TOP.tb_top.rvtop.ic_eccerr[1:0]
+TOP.tb_top.rvtop.ic_parerr[1:0]
+@22
+TOP.tb_top.rvtop.ic_premux_data[63:0]
+TOP.tb_top.rvtop.ic_rd_data[63:0]
+@29
+TOP.tb_top.rvtop.ic_rd_en
+@22
+TOP.tb_top.rvtop.ic_rd_hit[3:0]
+TOP.tb_top.rvtop.ic_rw_addr[31:1]
+@28
+TOP.tb_top.rvtop.ic_sel_premux_data
+@22
+TOP.tb_top.rvtop.ic_tag_ext_in_pkt[47:0]
+@28
+TOP.tb_top.rvtop.ic_tag_perr
+@22
+TOP.tb_top.rvtop.ic_tag_valid[3:0]
+TOP.tb_top.rvtop.ic_wr_data[141:0]
+TOP.tb_top.rvtop.ic_wr_en[3:0]
+[pattern_trace] 1
+[pattern_trace] 0

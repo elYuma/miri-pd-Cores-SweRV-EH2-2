@@ -488,6 +488,31 @@ typedef struct packed {
                        logic        BC2;
                       } eh2_ic_tag_ext_in_pkt_t;
 
+typedef struct packed {
+                       logic        TEST1;
+                       logic        RME;
+                       logic [3:0]  RM;
+                       logic        LS;
+                       logic        DS;
+                       logic        SD;
+                       logic        TEST_RNM;
+                       logic        BC1;
+                       logic        BC2;
+                      } eh2_dc_tag_ext_in_pkt_t;
+
+
+typedef struct packed {
+                       logic        TEST1;
+                       logic        RME;
+                       logic [3:0]  RM;
+                       logic        LS;
+                       logic        DS;
+                       logic        SD;
+                       logic        TEST_RNM;
+                       logic        BC1;
+                       logic        BC2;
+                      } eh2_dc_data_ext_in_pkt_t;
+
 
 typedef struct packed {
                         logic        select;
