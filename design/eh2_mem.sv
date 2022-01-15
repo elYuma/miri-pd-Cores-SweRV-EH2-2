@@ -127,6 +127,21 @@ import eh2_pkg::*;
       assign dccm_rd_data_hi = '0;
    end
 
+// Dcache instantiation
+if (pt.ICACHE_ENABLE == 1) begin : icache
+   eh2_lsu_dc_mem #(.pt(pt)) icm  (
+      .clk_override(icm_clk_override),
+      .*
+   );
+end
+else begin
+   assign   ic_rd_hit[3:0] = '0;
+   assign   ic_tag_perr    = '0 ;
+   assign   ic_rd_data  = '0 ;
+   assign   ictag_debug_rd_data  = '0 ;
+end
+
+// Icache instantiation
 if (pt.ICACHE_ENABLE == 1) begin : icache
    // ICACHE
    eh2_ifu_ic_mem #(.pt(pt)) icm  (
