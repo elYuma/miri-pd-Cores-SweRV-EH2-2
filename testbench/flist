@@ -37,6 +37,7 @@ $RV_ROOT/design/lsu/eh2_lsu_bus_intf.sv
 $RV_ROOT/design/lsu/eh2_lsu_ecc.sv
 $RV_ROOT/design/lsu/eh2_lsu_dccm_mem.sv
 $RV_ROOT/design/lsu/eh2_lsu_dccm_ctl.sv
+$RV_ROOT/design/lsu/eh2_lsu_dc_mem.sv
 $RV_ROOT/design/lsu/eh2_lsu_trigger.sv
 $RV_ROOT/design/lsu/eh2_lsu_amo.sv
 $RV_ROOT/design/dbg/eh2_dbg.sv

@@ -92,6 +92,37 @@ import eh2_pkg::*;
 
    output logic [pt.ICACHE_NUM_WAYS-1:0]   ic_rd_hit,
    output logic         ic_tag_perr,        // Icache Tag parity error
+   // Dcache and Dtag Ports
+   input  logic [31:1]  dc_rw_addr,
+   input  logic [pt.ICACHE_NUM_WAYS-1:0]   dc_tag_valid,
+   input  logic [pt.ICACHE_NUM_WAYS-1:0]          dc_wr_en  ,         // Which way to write
+   input  logic         dc_rd_en,
+   input  logic [63:0]  dc_premux_data,     // Premux data to be muxed with each way of the Icache.
+   input  logic         dc_sel_premux_data, // Premux data sel
+
+   input eh2_ic_data_ext_in_pkt_t   [pt.ICACHE_NUM_WAYS-1:0][pt.ICACHE_BANKS_WAY-1:0]         dc_data_ext_in_pkt,
+   input eh2_ic_tag_ext_in_pkt_t    [pt.ICACHE_NUM_WAYS-1:0]              dc_tag_ext_in_pkt,
+
+   input logic [pt.ICACHE_BANKS_WAY-1:0] [70:0]               dc_wr_data,           // Data to fill to the Icache. With ECC
+   output logic [63:0]               dc_rd_data ,          // Data read from Icache. 2x64bits + parity bits. F2 stage. With ECC
+   output logic [70:0]               dc_debug_rd_data ,    // Data read from Icache. 2x64bits + parity bits. F2 stage. With ECC
+   output logic [25:0]               dctag_debug_rd_data,  // Debug dcache tag.
+   input  logic [70:0]               dc_debug_wr_data,     // Debug wr cache.
+
+
+   input logic [pt.ICACHE_INDEX_HI:3]           dc_debug_addr,      // Read/Write addresss to the Icache.
+   input  logic                                 dc_debug_rd_en,     // Icache debug rd
+   input  logic                                 dc_debug_wr_en,     // Icache debug wr
+   input  logic                                 dc_debug_tag_array, // Debug tag array
+   input  logic [pt.ICACHE_NUM_WAYS-1:0]        dc_debug_way,       // Debug way. Rd or Wr.
+
+
+   output  logic [pt.ICACHE_BANKS_WAY-1:0]       dc_eccerr,
+   output  logic [pt.ICACHE_BANKS_WAY-1:0]       dc_parerr,
+
+
+   output logic [pt.ICACHE_NUM_WAYS-1:0]   dc_rd_hit,
+   output logic         dc_tag_perr,        // Icache Tag parity error
 
    // BTB ports
  input eh2_ccm_ext_in_pkt_t   [1:0] btb_ext_in_pkt,
@@ -127,21 +158,6 @@ import eh2_pkg::*;
       assign dccm_rd_data_hi = '0;
    end
 
-// Dcache instantiation
-if (pt.ICACHE_ENABLE == 1) begin : icache
-   eh2_lsu_dc_mem #(.pt(pt)) icm  (
-      .clk_override(icm_clk_override),
-      .*
-   );
-end
-else begin
-   assign   ic_rd_hit[3:0] = '0;
-   assign   ic_tag_perr    = '0 ;
-   assign   ic_rd_data  = '0 ;
-   assign   ictag_debug_rd_data  = '0 ;
-end
-
-// Icache instantiation
 if (pt.ICACHE_ENABLE == 1) begin : icache
    // ICACHE
    eh2_ifu_ic_mem #(.pt(pt)) icm  (
