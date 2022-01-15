@@ -43,7 +43,7 @@ import eh2_pkg::*;
       input logic                                   dc_sel_premux_data, // Select the pre_muxed data
 
       input  logic [pt.ICACHE_BANKS_WAY-1:0][70:0]  dc_wr_data,         // Data to fill to the Icache. With ECC
-      output logic [63:0]                           dc_rd_data ,        // Data read from Icache. 2x64bits + parity bits. F2 stage. With ECC
+      output logic [63:0]                           dc_rd_data,         // Data read from Icache. 2x64bits + parity bits. F2 stage. With ECC
       output logic [70:0]                           dc_debug_rd_data ,  // Data read from Icache. 2x64bits + parity bits. F2 stage. With ECC
       output logic [25:0]                           dctag_debug_rd_data,// Debug dcache tag.
       input logic  [70:0]                           dc_debug_wr_data,   // Debug wr cache.

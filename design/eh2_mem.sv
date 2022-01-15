@@ -93,6 +93,7 @@ import eh2_pkg::*;
 
    output logic [pt.ICACHE_NUM_WAYS-1:0]   ic_rd_hit,
    output logic         ic_tag_perr,        // Icache Tag parity error
+
    // Dcache and Dtag Ports
    input  logic [31:1]  dc_rw_addr,
    input  logic [pt.ICACHE_NUM_WAYS-1:0]   dc_tag_valid,
@@ -125,57 +126,25 @@ import eh2_pkg::*;
    output logic [pt.ICACHE_NUM_WAYS-1:0]   dc_rd_hit,
    output logic         dc_tag_perr,        // Icache Tag parity error
 
-   // Dcache and Dtag Ports
-   input  logic [31:1]  dc_rw_addr,
-   input  logic [pt.ICACHE_NUM_WAYS-1:0]   dc_tag_valid,
-   input  logic [pt.ICACHE_NUM_WAYS-1:0]          dc_wr_en  ,         // Which way to write
-   input  logic         dc_rd_en,
-   input  logic [63:0]  dc_premux_data,     // Premux data to be muxed with each way of the Icache.
-   input  logic         dc_sel_premux_data, // Premux data sel
-
-   input eh2_dc_data_ext_in_pkt_t   [pt.ICACHE_NUM_WAYS-1:0][pt.ICACHE_BANKS_WAY-1:0]         dc_data_ext_in_pkt,
-   input eh2_dc_tag_ext_in_pkt_t    [pt.ICACHE_NUM_WAYS-1:0]              dc_tag_ext_in_pkt,
-
-   input logic [pt.ICACHE_BANKS_WAY-1:0] [70:0]               dc_wr_data,           // Data to fill to the Icache. With ECC
-   output logic [63:0]               dc_rd_data ,          // Data read from Icache. 2x64bits + parity bits. F2 stage. With ECC
-   output logic [70:0]               dc_debug_rd_data ,    // Data read from Icache. 2x64bits + parity bits. F2 stage. With ECC
-   output logic [25:0]               dctag_debug_rd_data,  // Debug icache tag.
-   input  logic [70:0]               dc_debug_wr_data,     // Debug wr cache.
-
-
-   input logic [pt.ICACHE_INDEX_HI:3]           dc_debug_addr,      // Read/Write addresss to the Icache.
-   input  logic                                 dc_debug_rd_en,     // Icache debug rd
-   input  logic                                 dc_debug_wr_en,     // Icache debug wr
-   input  logic                                 dc_debug_tag_array, // Debug tag array
-   input  logic [pt.ICACHE_NUM_WAYS-1:0]        dc_debug_way,       // Debug way. Rd or Wr.
-
-
-   output  logic [pt.ICACHE_BANKS_WAY-1:0]       dc_eccerr,
-   output  logic [pt.ICACHE_BANKS_WAY-1:0]       dc_parerr,
-
-
-   output logic [pt.ICACHE_NUM_WAYS-1:0]   dc_rd_hit,
-   output logic         dc_tag_perr,        // Icache Tag parity error
-   
 
    // BTB ports
- input eh2_ccm_ext_in_pkt_t   [1:0] btb_ext_in_pkt,
+   input eh2_ccm_ext_in_pkt_t   [1:0] btb_ext_in_pkt,
 
- input logic                         btb_wren,
- input logic                         btb_rden,
- input logic [1:0] [pt.BTB_ADDR_HI:1] btb_rw_addr,  // per bank
- input logic [1:0] [pt.BTB_ADDR_HI:1] btb_rw_addr_f1,  // per bank
- input logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]         btb_sram_wr_data,
- input logic [1:0] [pt.BTB_BTAG_SIZE-1:0] btb_sram_rd_tag_f1,
+   input logic                         btb_wren,
+   input logic                         btb_rden,
+   input logic [1:0] [pt.BTB_ADDR_HI:1] btb_rw_addr,  // per bank
+   input logic [1:0] [pt.BTB_ADDR_HI:1] btb_rw_addr_f1,  // per bank
+   input logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]         btb_sram_wr_data,
+   input logic [1:0] [pt.BTB_BTAG_SIZE-1:0] btb_sram_rd_tag_f1,
 
- output eh2_btb_sram_pkt btb_sram_pkt,
+   output eh2_btb_sram_pkt btb_sram_pkt,
 
- output logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]      btb_vbank0_rd_data_f1,
- output logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]      btb_vbank1_rd_data_f1,
- output logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]      btb_vbank2_rd_data_f1,
- output logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]      btb_vbank3_rd_data_f1,
+   output logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]      btb_vbank0_rd_data_f1,
+   output logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]      btb_vbank1_rd_data_f1,
+   output logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]      btb_vbank2_rd_data_f1,
+   output logic [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0]      btb_vbank3_rd_data_f1,
 
- input  logic         scan_mode
+   input  logic         scan_mode
 );
 
    logic  active_clk;

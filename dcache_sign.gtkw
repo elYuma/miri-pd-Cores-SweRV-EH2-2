@@ -1,6 +1,6 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Sat Jan 15 16:50:54 2022
+[*] Sat Jan 15 17:32:24 2022
 [*]
 [dumpfile] "/home/yuma/Documents/MIRI-HPC/HPC-2/PD/Porject/SweRV-Dcache/miri-pd-Cores-SweRV-EH2-2/sim.vcd"
 [dumpfile_mtime] "Sat Jan 15 16:43:40 2022"
@@ -8,15 +8,14 @@
 [savefile] "/home/yuma/Documents/MIRI-HPC/HPC-2/PD/Porject/SweRV-Dcache/miri-pd-Cores-SweRV-EH2-2/dcache_sign.gtkw"
 [timestart] 0
 [size] 1920 1131
-[pos] -51 -51
-*-7.000000 41 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] -1 -1
+*-7.000000 225 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.tb_top.
-[treeopen] TOP.tb_top.rvtop.
 [treeopen] TOP.tb_top.rvtop.swerv.
 [treeopen] TOP.tb_top.rvtop.swerv.lsu.
 [sst_width] 463
-[signals_width] 319
+[signals_width] 407
 [sst_expanded] 1
 [sst_vpaned_height] 329
 @200
@@ -60,6 +59,91 @@ TOP.tb_top.rvtop.dc_wr_data[141:0]
 TOP.tb_top.rvtop.dc_wr_en[3:0]
 @200
 -
+-dccm
+@28
+TOP.tb_top.rvtop.dccm_clk_override
+@22
+TOP.tb_top.rvtop.dccm_ext_in_pkt[95:0]
+TOP.tb_top.rvtop.dccm_rd_addr_hi[16:0]
+@c00023
+TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+@28
+(0)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(1)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(2)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(3)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(4)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(5)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(6)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(7)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(8)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(9)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(10)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(11)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(12)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(13)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(14)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(15)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+(16)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+@1401201
+-group_end
+@c00022
+TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+@28
+(0)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(1)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(2)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(3)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(4)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(5)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(6)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(7)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(8)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(9)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(10)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(11)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(12)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(13)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(14)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(15)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(16)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(17)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(18)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(19)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(20)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(21)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(22)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(23)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(24)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(25)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(26)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(27)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(28)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(29)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(30)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(31)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(32)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(33)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(34)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(35)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(36)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(37)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+(38)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
+@1401200
+-group_end
+@22
+TOP.tb_top.rvtop.dccm_rd_data_lo[38:0]
+@28
+TOP.tb_top.rvtop.dccm_rden
+@22
+TOP.tb_top.rvtop.dccm_wr_addr_hi[16:0]
+TOP.tb_top.rvtop.dccm_wr_addr_lo[16:0]
+TOP.tb_top.rvtop.dccm_wr_data_hi[38:0]
+TOP.tb_top.rvtop.dccm_wr_data_lo[38:0]
+@28
+TOP.tb_top.rvtop.dccm_wren
+@200
+-
 -stbuff
 @28
 TOP.tb_top.rvtop.swerv.lsu.lsu_stbuf_c1_clk
@@ -97,7 +181,7 @@ TOP.tb_top.rvtop.ic_parerr[1:0]
 @22
 TOP.tb_top.rvtop.ic_premux_data[63:0]
 TOP.tb_top.rvtop.ic_rd_data[63:0]
-@29
+@28
 TOP.tb_top.rvtop.ic_rd_en
 @22
 TOP.tb_top.rvtop.ic_rd_hit[3:0]

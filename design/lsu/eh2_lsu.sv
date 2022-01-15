@@ -115,6 +115,11 @@ import eh2_pkg::*;
    input logic [pt.DCCM_FDATA_WIDTH-1:0]   dccm_rd_data_lo, // DCCM read data low bank
    input logic [pt.DCCM_FDATA_WIDTH-1:0]   dccm_rd_data_hi, // DCCM read data hi bank
 
+   // Dcache
+   output logic [31:1]                            dc_rw_addr,
+   output logic [pt.ICACHE_NUM_WAYS-1:0]          dc_wr_en  ,         // Which way to write
+   output logic                                   dc_rd_en  ,         // Read enable
+
    // PIC ports
    output logic                            picm_wren,        // PIC memory write enable
    output logic                            picm_rden,        // PIC memory read enable
@@ -243,6 +248,7 @@ import eh2_pkg::*;
 
 
    eh2_lsu_pkt_t  lsu_pkt_dc1_pre, lsu_pkt_dc1, lsu_pkt_dc2, lsu_pkt_dc3, lsu_pkt_dc4, lsu_pkt_dc5;
+
 
    // Store Buffer signals
    logic        store_stbuf_reqvld_dc5;
@@ -408,6 +414,13 @@ import eh2_pkg::*;
    else begin: GenNoAMO
       assign amo_data_dc3[31:0] = '0;
    end
+
+   // Dcache inputs
+   assign dc_wr_en                              = lsu_stbuf_commit_any | ld_single_ecc_error_dc5_ff | dma_dccm_wen;
+   assign dc_rd_en                              = (lsu_pkt_dc1_pre.valid & (lsu_pkt_dc1_pre.load | lsu_pkt_dc1_pre.atomic | (lsu_pkt_dc1_pre.store & (~(lsu_pkt_dc1_pre.word | lsu_pkt_dc1_pre.dword) | (lsu_addr_dc1[1:0] != 2'b0)))) & addr_in_dccm_region_dc1) |
+                              (dma_dccm_spec_req & (~dma_mem_write | ~(|dma_mem_sz[2:1])));   // Read based on speculation is fine
+   
+   assign dc_rw_addr =  dc_rd_en ? {dccm_rd_addr_hi, dccm_rd_addr_lo} : {dccm_wr_addr_hi, dccm_wr_addr_lo};
 
    eh2_lsu_dccm_ctl #(.pt(pt)) dccm_ctl (
       .lsu_addr_dc1(lsu_addr_dc1[31:0]),

@@ -266,6 +266,7 @@ import eh2_pkg::*;
    assign dccm_rd_addr_lo[pt.DCCM_BITS-1:0]     = lsu_addr_dc1[pt.DCCM_BITS-1:0];
    assign dccm_rd_addr_hi[pt.DCCM_BITS-1:0]     = end_addr_dc1[pt.DCCM_BITS-1:0];
 
+
    // DCCM outputs
     assign ldst_byteen_dc2[7:0] = ({8{lsu_pkt_dc2.by}}    & 8'b0000_0001) |
                                   ({8{lsu_pkt_dc2.half}}  & 8'b0000_0011) |
