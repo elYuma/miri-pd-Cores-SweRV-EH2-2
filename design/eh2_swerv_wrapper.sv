@@ -387,6 +387,35 @@ import eh2_pkg::*;
    logic [63:0]  ic_premux_data;
    logic         ic_sel_premux_data;
 
+   // Dcache ports
+   logic [31:1]  dc_rw_addr;
+   logic [pt.ICACHE_NUM_WAYS-1:0]   dc_wr_en  ;     // Which way to write
+   logic         dc_rd_en ;
+
+   logic [pt.ICACHE_NUM_WAYS-1:0]   dc_tag_valid;   // Valid from the I$ tag valid outside (in flops).
+
+   logic [pt.ICACHE_NUM_WAYS-1:0]   dc_rd_hit;
+   logic         dc_tag_perr;    // Dc tag parity error
+
+   logic [pt.ICACHE_INDEX_HI:3]  dc_debug_addr;      // Read/Write addresss to the Icache.
+   logic         dc_debug_rd_en;     // Dcache debug rd
+   logic         dc_debug_wr_en;     // Dcache debug wr
+   logic         dc_debug_tag_array; // Debug tag array
+   logic [pt.ICACHE_NUM_WAYS-1:0]   dc_debug_way;       // Debug way. Rd or Wr.
+
+   logic [pt.ICACHE_BANKS_WAY-1:0] [70:0] dc_wr_data;           // Data to fill to the Dcache. With ECC
+   logic [63:0]                           dc_rd_data;          // Data read from Icache. 2x64bits + parity bits. F2 stage. With ECC
+   logic [70:0]                           dc_debug_rd_data;    // Data read from Icache. 2x64bits + parity bits. F2 stage. With ECC
+   logic [25:0]                           dctag_debug_rd_data;  // Debug dcache tag.
+   logic [70:0]                           dc_debug_wr_data;     // Debug wr cache.
+   logic [pt.ICACHE_BANKS_WAY-1:0]        dc_eccerr;
+
+   logic [pt.ICACHE_BANKS_WAY-1:0]        dc_parerr;
+
+
+   logic [63:0]  dc_premux_data;
+   logic         dc_sel_premux_data;
+
    // ICCM ports
    logic [pt.ICCM_BITS-1:1]  iccm_rw_addr;
    logic [pt.NUM_THREADS-1:0]iccm_buf_correct_ecc_thr;                // ICCM is doing a single bit error correct cycle

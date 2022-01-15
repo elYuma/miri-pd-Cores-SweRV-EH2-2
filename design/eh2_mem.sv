@@ -128,16 +128,28 @@ import eh2_pkg::*;
    end
 
 if (pt.ICACHE_ENABLE == 1) begin : icache
+   // ICACHE
    eh2_ifu_ic_mem #(.pt(pt)) icm  (
       .clk_override(icm_clk_override),
       .*
    );
+   // DCACHE
+   eh2_lsu_dc_mem #(.pt(pt)) dcm (
+      .clk_override(dccm_clk_override),
+      .*
+   );
 end
 else begin
+   // ICACHE
    assign   ic_rd_hit[3:0] = '0;
    assign   ic_tag_perr    = '0 ;
    assign   ic_rd_data  = '0 ;
    assign   ictag_debug_rd_data  = '0 ;
+   // DCACHE
+   assign   dc_rd_hit[3:0]       = '0;
+   assign   dc_tag_perr          = '0 ;
+   assign   dc_rd_data           = '0 ;
+   assign   dctag_debug_rd_data  = '0 ;
 end
 
 if (pt.ICCM_ENABLE == 1) begin : iccm

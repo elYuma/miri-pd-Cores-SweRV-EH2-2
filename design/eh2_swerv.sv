@@ -132,6 +132,36 @@ import eh2_pkg::*;
    input  logic [pt.ICACHE_NUM_WAYS-1:0]            ic_rd_hit,
    input  logic                  ic_tag_perr,        // Icache Tag parity error
 
+   // DCache ports
+   output logic [31:1]           dc_rw_addr,
+   output logic [pt.ICACHE_NUM_WAYS-1:0]            dc_tag_valid,
+   output logic [pt.ICACHE_NUM_WAYS-1:0]          dc_wr_en  ,         // Which way to write
+   output logic                  dc_rd_en,
+
+   output logic [pt.ICACHE_BANKS_WAY-1:0] [70:0]               dc_wr_data,           // Data to fill to the Dcache. With ECC
+   input  logic [63:0]               dc_rd_data ,          // Data read from Dcache. 2x64bits + parity bits. F2 stage. With ECC
+   input  logic [70:0]               dc_debug_rd_data ,    // Data read from Dcache. 2x64bits + parity bits. F2 stage. With ECC
+   input  logic [25:0]               dctag_debug_rd_data,  // Debug dcache tag.
+   output logic [70:0]               dc_debug_wr_data,     // Debug wr cache.
+
+   input  logic [pt.ICACHE_BANKS_WAY-1:0] dc_eccerr,    //
+   input  logic [pt.ICACHE_BANKS_WAY-1:0] dc_parerr,
+
+
+   output logic [63:0]               dc_premux_data,     // Premux data to be muxed with each way of the Dcache.
+   output logic                      dc_sel_premux_data, // Select premux data
+
+
+   output logic [pt.ICACHE_INDEX_HI:3]            dc_debug_addr,      // Read/Write addresss to the Dcache.
+   output logic                      dc_debug_rd_en,     // Icache debug rd
+   output logic                      dc_debug_wr_en,     // Icache debug wr
+   output logic                      dc_debug_tag_array, // Debug tag array
+   output logic [pt.ICACHE_NUM_WAYS-1:0]          dc_debug_way,       // Debug way. Rd or Wr.
+
+
+   input  logic [pt.ICACHE_NUM_WAYS-1:0]            dc_rd_hit,
+   input  logic                  dc_tag_perr,        // Icache Tag parity error
+
 // BTB ports
    input eh2_btb_sram_pkt btb_sram_pkt,
 
@@ -1011,7 +1041,7 @@ import eh2_pkg::*;
    rvoclkhdr active_cg1   ( .clk(active_l2clk),   .en(1'b1), .l1clk(active_clk), .* );
 
 
-   assign        dccm_clk_override = dec_tlu_dccm_clk_override;   // dccm memory
+   assign        dccm_clk_override = dec_tlu_dccm_clk_override;   // dcache/dccm memory
    assign        icm_clk_override = dec_tlu_icm_clk_override;     // icache/iccm memory
    assign        btb_clk_override = dec_tlu_ifu_clk_override;
 
