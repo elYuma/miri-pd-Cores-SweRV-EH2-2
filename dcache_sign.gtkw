@@ -1,17 +1,18 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Sat Jan 15 17:32:24 2022
+[*] Wed Jan 19 19:37:46 2022
 [*]
 [dumpfile] "/home/yuma/Documents/MIRI-HPC/HPC-2/PD/Porject/SweRV-Dcache/miri-pd-Cores-SweRV-EH2-2/sim.vcd"
-[dumpfile_mtime] "Sat Jan 15 16:43:40 2022"
-[dumpfile_size] 69659254
+[dumpfile_mtime] "Wed Jan 19 19:34:58 2022"
+[dumpfile_size] 70691879
 [savefile] "/home/yuma/Documents/MIRI-HPC/HPC-2/PD/Porject/SweRV-Dcache/miri-pd-Cores-SweRV-EH2-2/dcache_sign.gtkw"
-[timestart] 0
+[timestart] 1419
 [size] 1920 1131
 [pos] -1 -1
-*-7.000000 225 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-5.000000 1484 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.tb_top.
+[treeopen] TOP.tb_top.rvtop.
 [treeopen] TOP.tb_top.rvtop.swerv.
 [treeopen] TOP.tb_top.rvtop.swerv.lsu.
 [sst_width] 463
@@ -59,35 +60,68 @@ TOP.tb_top.rvtop.dc_wr_data[141:0]
 TOP.tb_top.rvtop.dc_wr_en[3:0]
 @200
 -
+-Stalls
+@28
+TOP.tb_top.rvtop.swerv.dec_extint_stall
+TOP.tb_top.rvtop.swerv.dma_dccm_stall_any
+TOP.tb_top.rvtop.swerv.dma_iccm_stall_any
+TOP.tb_top.rvtop.swerv.ifu_pmu_align_stall[1:0]
+TOP.tb_top.rvtop.swerv.ifu_pmu_fetch_stall[1:0]
+TOP.tb_top.rvtop.swerv.lsu_amo_stall_any[1:0]
+TOP.tb_top.rvtop.swerv.lsu_fastint_stall_any
+TOP.tb_top.rvtop.swerv.lsu_load_stall_any[1:0]
+TOP.tb_top.rvtop.swerv.lsu_store_stall_any[1:0]
+@200
+-
 -dccm
 @28
 TOP.tb_top.rvtop.dccm_clk_override
 @22
 TOP.tb_top.rvtop.dccm_ext_in_pkt[95:0]
 TOP.tb_top.rvtop.dccm_rd_addr_hi[16:0]
-@c00023
+@c00022
+>1295
 TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
 @28
+>1295
 (0)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (1)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (2)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (3)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (4)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (5)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (6)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (7)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (8)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (9)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (10)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (11)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (12)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (13)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (14)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (15)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
+>1295
 (16)TOP.tb_top.rvtop.dccm_rd_addr_lo[16:0]
-@1401201
+@1401200
+>1295
 -group_end
 @c00022
+>0
 TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
 @28
 (0)TOP.tb_top.rvtop.dccm_rd_data_hi[38:0]
