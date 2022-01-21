@@ -179,21 +179,24 @@ bit [`RV_NUM_CORES-1:0][63:0] memdata;
 wire [`RV_NUM_CORES-1:0][63:0] WriteData;
 wire [`RV_NUM_CORES-1:0]mailbox_write;
 
-wire[31:0] raddr, waddr;
+wire [`RV_NUM_CORES-1:0][31:0] raddr, waddr;
 
 assign mailbox_write[0] = awvalid[0] && awaddr[0]==MAILBOX_ADDR && rst_l;
 assign WriteData[0] = wdata[0];
 
-assign mailbox_write[1] = awvalid[1] && awaddr[1]==MAILBOX_ADDR && rst_l;
-assign WriteData[1] = wdata[1];
+assign mailbox_write[1] = awvalid[0] && awaddr[0]==MAILBOX_ADDR && rst_l;
+assign WriteData[1] = wdata[0];
+
+//assign mailbox_write[1] = awvalid[1] && awaddr[1]==MAILBOX_ADDR && rst_l;
+//assign WriteData[1] = wdata[1];
 
 always @ ( posedge aclk or negedge rst_l) begin
     if(!rst_l) begin
         rvalid[0]  <= 0;
         bvalid[0]  <= 0;
 		
-		// Core 1
-		rvalid[1]  <= 0;
+	// Core 1
+	rvalid[1]  <= 0;
         bvalid[1]  <= 0;
     end
     else begin
@@ -202,13 +205,21 @@ always @ ( posedge aclk or negedge rst_l) begin
         rvalid[0]  <= arvalid[0];
         bvalid[0]  <= awvalid[0];
         rdata[0]   <= memdata[0];
+        
+        bid[1]     <= awid[0];
+        rid[1]     <= arid[0];
+        rvalid[1]  <= arvalid[0];
+        bvalid[1]  <= awvalid[0];
+        rdata[1]   <= memdata[0];
 		
-		// Core 1
-		bid[1]     <= awid[1];
+	/*
+	// Core 1
+	bid[1]     <= awid[1];
         rid[1]     <= arid[1];
         rvalid[1]  <= arvalid[1];
         bvalid[1]  <= awvalid[1];
         rdata[1]   <= memdata[1];
+        */
     end
 end
 
@@ -216,8 +227,11 @@ assign raddr[0] = {araddr[0][31:3],3'b0};
 assign waddr[0] = {awaddr[0][31:3],3'b0};
 
 // Core 1
-assign raddr[1] = {araddr[1][31:3],3'b0};
-assign waddr[1] = {awaddr[1][31:3],3'b0};
+assign raddr[1] = raddr[0];
+assign waddr[1] = waddr[0];
+
+//assign raddr[1] = {araddr[1][31:3],3'b0};
+//assign waddr[1] = {awaddr[1][31:3],3'b0};
 
 always @ ( negedge aclk) begin
     if(arvalid[0]) memdata[0] <= {mem[raddr[0]+7], mem[raddr[0]+6], mem[raddr[0]+5], mem[raddr[0]+4],
@@ -232,7 +246,9 @@ always @ ( negedge aclk) begin
         if(wstrb[0][1]) mem[waddr[0]+1] = wdata[0][15:08];
         if(wstrb[0][0]) mem[waddr[0]+0] = wdata[0][07:00];
     end
-	
+    
+    if(arvalid[0]) memdata[1] = memdata[0];
+/*	
 	// Core 1
 	if(arvalid[1]) memdata[1] <= {mem[raddr[1]+7], mem[raddr[1]+6], mem[raddr[1]+5], mem[raddr[1]+4],
                             mem[raddr[1]+3], mem[raddr[1]+2], mem[raddr[1]+1], mem[raddr[1]]};
@@ -246,6 +262,7 @@ always @ ( negedge aclk) begin
         if(wstrb[1][1]) mem[waddr[1]+1] = wdata[1][15:08];
         if(wstrb[1][0]) mem[waddr[1]+0] = wdata[1][07:00];
     end
+    */
 end
 
 

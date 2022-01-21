@@ -25,9 +25,9 @@ module tb_top ( input bit core_clk );
 module tb_top;
     bit                         core_clk;
 `endif
-    logic [`RV_NUM_CORES-1:0]                       rst_l;
-    logic [`RV_NUM_CORES-1:0]                       porst_l;
-    logic [`RV_NUM_CORES-1:0]                       nmi_int;
+    logic                       rst_l;
+    logic                       porst_l;
+    logic                       nmi_int;
 
     logic        [31:0]         reset_vector;
     logic        [31:0]         nmi_vector;
@@ -1050,7 +1050,7 @@ axi_slv #(.TAGW(`RV_LSU_BUS_TAG)) lmem(
 
 axi_lsu_dma_bridge # (`RV_LSU_BUS_TAG,`RV_LSU_BUS_TAG ) bridge(
     .clk(core_clk),
-    .reset_l(rst_l[0]),
+    .reset_l(rst_l),
 
     .m_arvalid(lsu_axi_arvalid[0]),
     .m_arid(lsu_axi_arid[0]),
@@ -1121,7 +1121,7 @@ axi_lsu_dma_bridge # (`RV_LSU_BUS_TAG,`RV_LSU_BUS_TAG ) bridge(
 
 axi_lsu_dma_bridge # (`RV_LSU_BUS_TAG,`RV_LSU_BUS_TAG ) bridge_1(
     .clk(core_clk),
-    .reset_l(rst_l[1]),
+    .reset_l(rst_l),
 
     .m_arvalid(lsu_axi_arvalid[1]),
     .m_arid(lsu_axi_arid[1]),

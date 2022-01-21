@@ -27,8 +27,8 @@ import eh2_pkg::*;
 ) (
    // Input / Output definitions for Core 0  
    input logic                       clk,
-   input logic [pt.NUM_CORES-1:0]                       rst_l,
-   input logic [pt.NUM_CORES-1:0]                       dbg_rst_l,
+   input logic                       rst_l,
+   input logic                       dbg_rst_l,
    input logic [31:1]                rst_vec,
    input logic                        nmi_int,
    input logic  [31:1]                nmi_vec,
@@ -417,10 +417,10 @@ import eh2_pkg::*;
    logic [pt.NUM_CORES-1:0] [pt.BTB_TOFFSET_SIZE+pt.BTB_BTAG_SIZE+5-1:0] btb_sram_wr_data;
    logic [pt.NUM_CORES-1:0] [1:0] [pt.BTB_BTAG_SIZE-1:0]                 btb_sram_rd_tag_f1;
 
-   logic [pt.NUM_CORES-1:0]           active_l2clk;
-   logic [pt.NUM_CORES-1:0]           free_l2clk;
+   logic            active_l2clk;
+   logic            free_l2clk;
 
-   logic [pt.NUM_CORES-1:0]        core_rst_l;     // Core reset including rst_l and dbg_rst_l
+   logic       core_rst_l;     // Core reset including rst_l and dbg_rst_l
 
    logic [pt.NUM_CORES-1:0]        dccm_clk_override;
    logic [pt.NUM_CORES-1:0]        icm_clk_override;
@@ -804,15 +804,15 @@ import eh2_pkg::*;
    // Instantiate the eh2_swerv core
    eh2_swerv #(.pt(pt)) swerv_0 (
    .clk(clk),
-   .rst_l(rst_l[0]),
-   .dbg_rst_l(dbg_rst_l[0]),  
+   .rst_l(rst_l),
+   .dbg_rst_l(dbg_rst_l),  
    .rst_vec(rst_vec),
    .nmi_int(nmi_int),
    .nmi_vec(nmi_vec),
 
-   .core_rst_l(core_rst_l[0]),   
-   .active_l2clk(active_l2clk[0]),
-   .free_l2clk(free_l2clk[0]),
+   .core_rst_l(core_rst_l),   
+   .active_l2clk(active_l2clk),
+   .free_l2clk(free_l2clk),
 
    .trace_rv_i_insn_ip(trace_rv_i_insn_ip[0]),
    .trace_rv_i_address_ip(trace_rv_i_address_ip[0]),
@@ -1182,15 +1182,15 @@ import eh2_pkg::*;
                                
    eh2_swerv #(.pt(pt)) swerv_1 (
    .clk(clk),
-   .rst_l(rst_l[1]),
-   .dbg_rst_l(dbg_rst_l[1]),  
+   .rst_l(rst_l),
+   .dbg_rst_l(dbg_rst_l),  
    .rst_vec(rst_vec),
    .nmi_int(nmi_int),
    .nmi_vec(nmi_vec),
 
-   .core_rst_l(core_rst_l[1]),   
-   .active_l2clk(active_l2clk[1]),
-   .free_l2clk(free_l2clk[1]),
+   .core_rst_l(core_rst_l),   
+   .active_l2clk(active_l2clk),
+   .free_l2clk(free_l2clk),
 
    .trace_rv_i_insn_ip(trace_rv_i_insn_ip[1]),
    .trace_rv_i_address_ip(trace_rv_i_address_ip[1]),
